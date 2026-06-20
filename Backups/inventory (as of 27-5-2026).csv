@@ -1,0 +1,112 @@
+id,name,producer,category,sub_style,notes
+1,Imitation Grenadine,Cawsey's,syrup,grenadine,Flavoured cordial; 300mL
+2,Glayva,Glayva,liqueur,whisky liqueur,Scotch whisky liqueur with heather honey/herbs/spices
+3,Amaro Montenegro,Montenegro,amaro,,"Premiata 1885; 40 botanicals; Bologna, Italia"
+4,Triple Sec,Continental,liqueur,orange liqueur,500mL
+5,Sugar Syrup,Cawsey's,syrup,simple syrup,Non-alcoholic
+6,Cocktail Simple Syrup,Crawley's Bartender,syrup,simple syrup,"750mL; The Simple Syrup Co., Sydney"
+7,Hennessy VS Cognac,Hennessy,brandy,cognac,Very Special; 700mL
+8,St-Rémy VSOP,St-Rémy,brandy,french brandy,VSOP; 700mL; Produit de France
+9,Lime Juice Cordial,Bickford's,juice,lime cordial,750mL; Australian made
+10,Bartender Agave Syrup,Crawley's Bartender,syrup,agave syrup,"750mL; The Simple Syrup Co., Sydney"
+11,Kahlúa Coffee Liqueur,Kahlúa,liqueur,coffee liqueur,"700mL; 20% ABV; product of Mexico"
+12,La Playa Butterscotch Schnapps,N.G. Kallikounis,liqueur,butterscotch,"100mL; 21% ABV; Kalamata, Greece"
+13,La Playa Apricot Liqueur,N.G. Kallikounis,liqueur,apricot,"100mL; 24% ABV; Kalamata, Greece"
+14,Midori Melon Liqueur,Suntory,liqueur,melon,375mL; 21% ABV
+15,Frangelico,Barbero 1891,liqueur,hazelnut,350mL; 24% ABV; Italy
+16,Pampelle Ruby Aperitif,Pampelle,liqueur,grapefruit aperitif,700mL; 15% ABV; France
+17,Vok Brown Crème de Cacao,Vok,liqueur,crème de cacao,500mL; 20% ABV
+18,Pimm's No. 1 Cup,Pimm's,liqueur,aperitif,700mL; 25% ABV; UK; gin-based
+19,Green Fairy Absinth,Green Fairy,other,absinthe,500mL; Czech absinthe
+20,Vok White Crème de Cacao,Vok,liqueur,crème de cacao,500mL; 20% ABV
+21,Belvoir Elderflower Cordial,Belvoir Fruit Farms,syrup,elderflower cordial,500mL; infusion of flowers and lemon
+22,McWilliam's Royal Reserve Dry,McWilliam's,other,sherry-style fortified wine,Australian fortified wine; dry apera/sherry-style
+23,Fernet-Branca,Fratelli Branca,amaro,fernet,Milano; produced in Italy
+24,Fee Brothers Aztec Chocolate Bitters,Fee Brothers,bitters,chocolate,150mL (5 fl oz); 2.55% ABV
+25,Angostura Aromatic Bitters,Angostura,bitters,aromatic,200mL; 44.7% ABV; Trinidad & Tobago
+26,Peychaud's Aromatic Cocktail Bitters,L.E. Jung and Wolff Co.,bitters,aromatic,"296mL (10 fl oz); 35% ABV; New Orleans"
+27,Australian Bitters Company Aromatic Bitters,Australian Bitters Company,bitters,aromatic,250mL; 45% ABV; hand-crafted
+28,Angostura Orange Bitters,Angostura,bitters,orange,100mL; 28% ABV; Trinidad & Tobago
+29,Imbroglio,Poor Toms,liqueur,aperitif,"500mL; 25% ABV; Italian-Australian aperitivo, Sydney"
+30,Chambord,Chambord,liqueur,black raspberry,500mL; Produit de France
+31,Belvedere Vodka,Belvedere,vodka,,700mL; 40% ABV; Poland
+32,Campari,Campari,liqueur,bitter aperitivo,Since 1860; Milano; bitter
+33,1800 Añejo Tequila,1800,tequila,añejo,"700mL; 38% ABV; 100% agave; aged in French and American oak"
+34,Maker's Mark,Maker's Mark,whisky,bourbon,"700mL and 1L bottles present; 40% ABV; Kentucky straight bourbon; Loretto, KY"
+35,Vok Blue Curaçao,Vok,liqueur,blue curaçao,Blue
+36,Opal Bianca,Opal Bianca,liqueur,sambuca,Original White; Liquore alla Sambuca
+37,Galliano Black Sambuca,Galliano,liqueur,sambuca,"350mL; 30% ABV; Livorno 1896; black sambuca, distilled in Italy"
+38,Bacardí Carta Blanca,Bacardí,rum,white,"37.5% ABV; Santiago; made in Puerto Rico; also marketed as Bacardí Superior"
+39,Green Chartreuse,Chartreuse Diffusion,liqueur,herbal,"1L; 55% ABV; Voiron, France"
+40,Galliano L'Autentico,Arturo Vaccari,liqueur,herbal,"500mL; 35% ABV; produce of Italy"
+41,The Gospel Solera Rye,The Gospel,whisky,rye,"700mL; 42.5% ABV; Australian"
+42,Laphroaig The 1815 Legacy Edition,Laphroaig,whisky,islay,48% ABV; travel retail exclusive
+43,Jägermeister,Jägermeister,liqueur,herbal,"1L; 35% ABV; Sydney limited edition bottle"
+44,Fireball Cinnamon Whisky,Fireball,liqueur,cinnamon whisky,1L; cinnamon-flavoured whisky liqueur
+45,Cîroc Snap Frost Vodka,Cîroc,vodka,grape,"750mL; distilled from French grapes; 5 times distilled"
+46,Southern Comfort Original,Southern Comfort,liqueur,whiskey liqueur,700mL; New Orleans
+47,Jameson Cold Brew,Jameson,liqueur,whiskey liqueur,Irish whiskey with cold brew coffee; dry liqueur
+48,Aperol,Fratelli Barbieri,liqueur,bitter aperitivo,Aperitivo dal 1919; Padova
+49,Captain Morgan Black Label Jamaica Rum O.P.,Captain Morgan,rum,overproof,"1125mL; 57.2% ABV; Jamaica rum, bottled in Australia"
+50,Rémy Martin VSOP,Rémy Martin,brandy,cognac,"Fine Champagne; Product of France; Maison fondée en 1724"
+51,Oxley Cold Distilled London Dry Gin,Oxley,gin,london dry,"1L; 47% ABV; Recipe No. 38; Product of England"
+52,Belvedere Organic Vodka,Belvedere,vodka,,"1L; 40% ABV; Poland"
+53,Glenmorangie The Elementa 14,Glenmorangie,whisky,highland,"1L; aged 14 years; new charred oak cask finish"
+54,Glenmorangie Finest Reserve 19,Glenmorangie,whisky,highland,"700mL; 43% ABV; aged 19 years"
+55,The Balvenie DoubleWood 12,The Balvenie,whisky,speyside,"Aged 12 years; matured in two distinct casks; Banffshire; The Original Cask Finish"
+56,Aberlour A'Bunadh,Aberlour,whisky,speyside,"60.8% ABV; batch no. 61; cask strength; Spanish Oloroso sherry butts; non chill-filtered"
+57,Jameson Irish Whiskey,Jameson,whisky,irish,1L; triple distilled; product of Ireland
+58,Eagle Rare,Eagle Rare,whisky,bourbon,Kentucky straight bourbon
+59,American Eagle 4 Year,American Eagle,whisky,bourbon,"700mL; 40% ABV; aged 4 years; Tennessee bourbon"
+60,Baileys Original Irish Cream,Baileys,liqueur,cream liqueur,"1L; 17% ABV; product of Ireland"
+61,Chivas Regal Extra,Chivas Regal,whisky,blended scotch,"700mL; 40% ABV; selectively matured in sherry casks"
+62,Lagavulin 8,Lagavulin,whisky,islay,Aged 8 years
+63,Lagavulin 16,Lagavulin,whisky,islay,Aged 16 years
+64,Laphroaig PX Cask,Laphroaig,whisky,islay,"48% ABV; triple matured; Pedro Ximénez sherry finish; travel retail exclusive"
+65,Laphroaig Four Oak,Laphroaig,whisky,islay,"40% ABV; matured in four different casks; travel retail exclusive"
+66,Loch Lomond 12,Loch Lomond,whisky,highland,"Aged 12 years; non chill-filtered; American oak"
+67,Glenfiddich 18,Glenfiddich,whisky,speyside,"1L; 43% ABV; aged 18 years; Dufftown, Banffshire"
+68,Fuji Single Grain Japanese Whiskey,Kirin,whisky,japanese,"700mL; 46% ABV; from Mt. Fuji Distillery"
+69,Toki Suntory Whisky,Suntory,whisky,japanese,"700mL; 43% ABV; blended Japanese whisky"
+70,Bear Hug Tequila Infusion Papaya,Bear Hug,liqueur,tequila-based,"750mL; 21% ABV; 3x distilled blue agave tequila infused with papaya"
+71,Disaronno Originale,Illva Saronno,liqueur,amaretto,"700mL; 20% ABV; Italian almond liqueur"
+72,Avión Silver,Avión,tequila,blanco,"750mL; 40% ABV; small batch; Highlands agave"
+73,Jack Daniel's Old No. 7,Jack Daniel's,whisky,bourbon,"1L; 40% ABV; Tennessee sour mash; Lynchburg"
+74,Brookie's Byron Slow Gin,Brookie's,gin,sloe gin,"700mL; 26% ABV; limited edition; Davidson plum (Byron Bay, Australia)"
+75,Smirnoff Twisted Citrus,Smirnoff,vodka,flavoured,Citrus flavoured vodka
+76,The Botanist Islay Dry Gin,The Botanist,gin,islay dry,"46% ABV; foraged island botanicals; Islay, Scotland"
+77,The Kraken Black Spiced Rum,The Kraken,rum,spiced,"700mL; 40% ABV"
+78,Sipsmith London Dry Gin,Sipsmith,gin,london dry,"1L; 44.1% ABV; hand-crafted in small batches; exclusive for travel retail"
+79,Absolut Mango,Absolut,vodka,flavoured,"1L; 40% ABV; mango flavoured; Sweden"
+80,The Glenlivet Founder's Reserve,The Glenlivet,whisky,speyside,"700mL; 40% ABV; American oak selection"
+81,La Gritona Tequila Reposado,La Gritona,tequila,reposado,100% agave azul
+82,Santiago de Cuba Añejo,Santiago de Cuba,rum,aged,"700mL; 38% ABV; Cuba; D.O.P."
+83,Mr Black Coffee Amaro,Mr Black,liqueur,coffee liqueur,"700mL; 28.5% ABV; special edition; Australia"
+84,Absolut Vodka,Absolut,vodka,,"40% ABV; Swedish vodka; village of Åhus"
+85,Bombay Sapphire,Bombay Sapphire,gin,london dry,"1L; 47% ABV; vapour infused; product of England"
+86,Bombay Sapphire East,Bombay Sapphire,gin,london dry,"1L; 42% ABV; vapour infused with Thai lemongrass and Vietnamese black peppercorns"
+87,Nêga Fulô Cachaça,Carvalho,other,cachaça,"750mL; 38% ABV; Brazilian cachaça"
+88,Crystal Head Vodka,Crystal Head,vodka,,Skull-shaped bottle; label not visible — identification by bottle shape only
+89,Chivas Regal 18 Gold Signature,Chivas Regal,whisky,blended scotch,"750mL; 40% ABV; aged 18 years"
+90,Ink Gin,Husk Distillers,gin,floral,"700mL; 43% ABV; butterfly pea floral infused; Tumbulgum, Australia"
+91,Hennessy XO,Hennessy,brandy,cognac,"1L; 40% ABV; The Original X.O"
+92,Patrón XO Cafe,Patrón,liqueur,coffee liqueur,"750mL; 35% ABV (70 proof); made with Patrón Silver tequila; 100% agave; Mexico"
+93,Ukiyo Japanese Rice Vodka,Ukiyo,vodka,rice,"700mL; 40% ABV; distilled in Japan"
+94,Drambuie,Drambuie,liqueur,whisky liqueur,"1L; Isle of Skye liqueur; aged Scotch whisky, heather honey, herbs and spices"
+95,Hendrick's Gin,Hendrick's,gin,contemporary,"Scotland; bottle identified by shape/embossing, label not visible"
+96,Malfy Gin Rosa,Malfy,gin,flavoured,"700mL; 41% ABV; pink grapefruit; Italy"
+97,Hey June Juniper Gin,Hey June,gin,contemporary,"500mL and 200mL bottles present; 45% ABV; boutique Australian"
+98,Blueberry Gin,Hey June,gin,flavoured,"200mL; 40% ABV; boutique Australian"
+99,Cointreau,Cointreau,liqueur,orange liqueur,"1L; 40% ABV; Angers, France; both standard and Édition Limitée bottles present"
+100,Roku Gin,Suntory,gin,japanese,"43% ABV; The Japanese Craft Gin; 6 botanicals; distilled in Japan"
+101,Oban 14,Oban,whisky,highland,"43% ABV; West Highland single malt; tube only — bottle unopened inside"
+102,Teremana Añejo,Teremana,tequila,añejo,"40% ABV; small batch; whiskey barrel rested; copper pot stills; Mexico"
+103,Teremana Reposado,Teremana,tequila,reposado,"40% ABV; small batch; 100% agave; Highlands; Mexico"
+104,Balcones Texas Pot Still Bourbon,Balcones,whisky,bourbon,"700mL; 46% ABV; Texas straight bourbon"
+105,Dolin Dry Vermouth,Dolin,vermouth,dry,"Maison fondée en 1821; Chambéry, France"
+106,Aberlour 12 Double Cask Matured,Aberlour,whisky,speyside,"700mL; 40% ABV; aged 12 years; American oak + sherry casks; tube only — bottle unopened inside"
+107,Darroze Les Grands Assemblages 20,Darroze,brandy,armagnac,Bas-Armagnac; 20 years old; France
+108,First Press Espresso Martini Mixer,First Press Merchants,mixer,coffee concentrate,750mL; cold drip coffee concentrate; makes 25 martinis
+109,Jose Cuervo Classic Margarita Mix,Jose Cuervo,mixer,margarita mix,"1L; non-alcoholic; crafted with triple sec and natural lime flavouring; Jalisco, Mexico"
+110,Carpano Antica Formula,Carpano,vermouth,sweet,"Antica Ricetta; Vermouth Pregiato; dal 1786; Giuseppe B. Carpano; Torino, Italia"
+111,Tanqueray No. Ten,Tanqueray,gin,london dry,"47.3% ABV; small batch; distilled with fresh citrus and botanicals; London, England"

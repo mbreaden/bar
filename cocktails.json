@@ -1,0 +1,2752 @@
+[
+  {
+    "id": 1,
+    "name": "Negroni",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "30ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Boulevardier",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "bourbon or rye",
+        "amount": "45ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "Use bourbon or rye.",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Old Pal",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "30ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "30ml",
+        "match_sub_style": "dry"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel",
+    "notes": "Drier, sharper cousin of the Boulevardier.",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Americano",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice, top with soda, stir gently.",
+    "glass": "highball",
+    "garnish": "orange slice",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Negroni Sbagliato",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "sparkling wine",
+        "amount": "60ml"
+      }
+    ],
+    "method": "Build in rocks glass over ice, top with prosecco, stir gently.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Aperol Spritz",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Aperol",
+        "amount": "60ml",
+        "match_name": "Aperol"
+      },
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in wine glass over ice, stir gently.",
+    "glass": "wine",
+    "garnish": "orange slice",
+    "notes": "3-2-1 ratio prosecco-Aperol-soda.",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif",
+      "brunch"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Campari Spritz",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "60ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in wine glass over ice, stir gently.",
+    "glass": "wine",
+    "garnish": "orange slice",
+    "notes": "Bitterer than Aperol Spritz.",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Martini",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_sub_style": "orange"
+      }
+    ],
+    "method": "Stir with ice until very cold, strain into chilled coupe or martini glass.",
+    "glass": "coupe",
+    "garnish": "lemon twist or olive",
+    "notes": "Ratio to taste; bitters optional but traditional.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Vodka Martini",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "60ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist or olive",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "stirred"
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Dirty Martini",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin or vodka",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      },
+      {
+        "item": "olive brine",
+        "amount": "10ml"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "olives",
+    "notes": "Requires olive brine.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "savoury"
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Gibson",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "pickled cocktail onion",
+    "notes": "Requires cocktail onion.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "savoury"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Manhattan",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye or bourbon",
+        "amount": "60ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "brandied cherry",
+    "notes": "Rye is traditional; bourbon works.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Rob Roy",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "blended scotch",
+        "amount": "60ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist or cherry",
+    "notes": "Manhattan with scotch.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Old Fashioned",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "bourbon or rye",
+        "amount": "60ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir all with ice in rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Sazerac",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "60ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "absinthe",
+        "amount": "rinse",
+        "match_sub_style": "absinthe"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Peychaud's bitters",
+        "amount": "3 dashes",
+        "match_name": "Peychaud's Aromatic Cocktail Bitters"
+      }
+    ],
+    "method": "Rinse chilled rocks glass with absinthe, discard. Stir remaining ingredients with ice, strain into glass.",
+    "glass": "rocks",
+    "garnish": "lemon peel (expressed, discarded)",
+    "notes": "No ice in final glass.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming",
+      "herbal"
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Vieux Carr\u00e9",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "25ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "cognac",
+        "amount": "25ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "25ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "B\u00e9n\u00e9dictine",
+        "amount": "1 bar spoon"
+      },
+      {
+        "item": "Peychaud's bitters",
+        "amount": "2 dashes",
+        "match_name": "Peychaud's Aromatic Cocktail Bitters"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_name": "Angostura Aromatic Bitters"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "Missing B\u00e9n\u00e9dictine.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Whisky Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake (no ice) if using egg, then shake with ice. Strain into rocks glass over ice or into coupe.",
+    "glass": "rocks or coupe",
+    "garnish": "Angostura dashes on foam, lemon peel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Daiquiri",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "white rum",
+        "amount": "60ml",
+        "match_sub_style": "white"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake hard with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lime wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Gimlet",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lime cordial",
+        "amount": "20ml",
+        "match_name": "Lime Juice Cordial"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lime wheel",
+    "notes": "Classic 1950s version uses cordial, not fresh juice \u2014 works directly with your Bickford's.",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Fresh Gimlet",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lime juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lime wheel",
+    "notes": "Modern preparation.",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Margarita",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "50ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "20ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled rocks or coupe glass. Optional salt rim.",
+    "glass": "rocks or coupe",
+    "garnish": "salt rim, lime wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Tommy's Margarita",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "60ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "15ml",
+        "match_sub_style": "agave syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "lime wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Paloma",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "60ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "grapefruit soda",
+        "amount": "top"
+      },
+      {
+        "item": "salt",
+        "amount": "pinch"
+      }
+    ],
+    "method": "Build in highball over ice, top with grapefruit soda.",
+    "glass": "highball",
+    "garnish": "grapefruit wedge",
+    "notes": "Grapefruit soda not in inventory but assumed available.",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built",
+      "light"
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Tequila Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "60ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "15ml",
+        "match_sub_style": "agave syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake if using egg, then shake with ice. Strain into coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Mojito",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "white rum",
+        "amount": "60ml",
+        "match_sub_style": "white"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "mint leaves",
+        "amount": "8-10"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Gently muddle mint in shaker. Add rum, lime, syrup, ice. Shake briefly, strain into highball over ice. Top with soda.",
+    "glass": "highball",
+    "garnish": "mint sprig",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "light",
+      "herbal"
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Cuba Libre",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "50ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "lime juice",
+        "amount": "10ml"
+      },
+      {
+        "item": "cola",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "built",
+      "refreshing",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Dark 'n' Stormy",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dark/spiced rum",
+        "amount": "60ml",
+        "match_sub_style": "spiced"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "ginger beer",
+        "amount": "top"
+      }
+    ],
+    "method": "Build rum and lime in highball over ice. Top with ginger beer, stir.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "Traditionally Gosling's; Kraken works well.",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built",
+      "warming"
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Mai Tai",
+    "category": "tiki",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "30ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "overproof rum",
+        "amount": "30ml",
+        "match_sub_style": "overproof"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "15ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "orgeat",
+        "amount": "15ml"
+      }
+    ],
+    "method": "Shake with crushed ice, dump into rocks glass.",
+    "glass": "rocks",
+    "garnish": "mint sprig, lime shell",
+    "notes": "Missing orgeat. Trader Vic original calls for aged Jamaican + Martinique; your Santiago + Kraken/Captain Morgan OP is a fair stand-in.",
+    "tags": [
+      "tropical",
+      "shaken",
+      "citrusy",
+      "tiki"
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Pi\u00f1a Colada",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "white rum",
+        "amount": "60ml",
+        "match_sub_style": "white"
+      },
+      {
+        "item": "coconut cream",
+        "amount": "30ml"
+      },
+      {
+        "item": "pineapple juice",
+        "amount": "90ml"
+      }
+    ],
+    "method": "Blend with crushed ice, or shake hard and strain into hurricane glass.",
+    "glass": "hurricane",
+    "garnish": "pineapple wedge",
+    "notes": "Needs coconut cream and pineapple juice.",
+    "tags": [
+      "tropical",
+      "sweet",
+      "shaken"
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Jungle Bird",
+    "category": "tiki",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "45ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "Campari",
+        "amount": "20ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "pineapple juice",
+        "amount": "45ml"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "pineapple leaf",
+    "notes": "Needs pineapple juice.",
+    "tags": [
+      "tropical",
+      "bitter",
+      "shaken",
+      "tiki"
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Caipirinha",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cacha\u00e7a",
+        "amount": "60ml",
+        "match_sub_style": "cacha\u00e7a"
+      },
+      {
+        "item": "lime",
+        "amount": "half, cut into wedges"
+      },
+      {
+        "item": "white sugar",
+        "amount": "2 tsp"
+      }
+    ],
+    "method": "Muddle lime and sugar in rocks glass. Add cacha\u00e7a, fill with crushed ice, stir.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built"
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Moscow Mule",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "60ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "ginger beer",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in copper mug or highball over ice.",
+    "glass": "copper mug or highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built"
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Vodka Soda",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "45ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "built"
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Gin & Tonic",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "50ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "tonic water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball or copa glass over ice.",
+    "glass": "highball or copa",
+    "garnish": "lime wedge or lemon peel",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "light",
+      "built"
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Tom Collins",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "50ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Shake gin, lemon, syrup with ice. Strain into collins glass over ice, top with soda.",
+    "glass": "collins",
+    "garnish": "lemon wheel",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "light"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "French 75",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "30ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "champagne or prosecco",
+        "amount": "60ml"
+      }
+    ],
+    "method": "Shake gin, lemon, syrup with ice. Strain into flute, top with sparkling wine.",
+    "glass": "flute",
+    "garnish": "lemon twist",
+    "notes": "",
+    "tags": [
+      "light",
+      "citrusy",
+      "refreshing",
+      "brunch"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Bee's Knees",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "honey syrup",
+        "amount": "20ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Honey syrup = honey diluted 2:1 with hot water.",
+    "tags": [
+      "sour",
+      "citrusy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Last Word",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "22ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "Green Chartreuse",
+        "amount": "22ml",
+        "match_name": "Green Chartreuse"
+      },
+      {
+        "item": "maraschino liqueur",
+        "amount": "22ml"
+      },
+      {
+        "item": "lime juice",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "",
+    "notes": "Needs maraschino liqueur.",
+    "tags": [
+      "herbal",
+      "sour",
+      "shaken"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Final Ward",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "22ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Green Chartreuse",
+        "amount": "22ml",
+        "match_name": "Green Chartreuse"
+      },
+      {
+        "item": "maraschino liqueur",
+        "amount": "22ml"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Needs maraschino liqueur. Last Word variant with rye and lemon.",
+    "tags": [
+      "herbal",
+      "sour",
+      "shaken"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Paper Plane",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "22ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "Aperol",
+        "amount": "22ml",
+        "match_name": "Aperol"
+      },
+      {
+        "item": "Amaro Nonino",
+        "amount": "22ml"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "",
+    "notes": "Missing Amaro Nonino; Montenegro is a passable substitute.",
+    "tags": [
+      "bitter",
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Sidecar",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cognac",
+        "amount": "50ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "20ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "sugar rim (optional), lemon twist",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Brandy Alexander",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cognac",
+        "amount": "30ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "brown cr\u00e8me de cacao",
+        "amount": "30ml",
+        "match_name": "Vok Brown Cr\u00e8me de Cacao"
+      },
+      {
+        "item": "cream",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "grated nutmeg",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "after-dinner",
+      "shaken"
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Espresso Martini",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "20ml",
+        "match_name": "Kahl\u00faa Coffee Liqueur"
+      },
+      {
+        "item": "espresso or coffee concentrate",
+        "amount": "30ml",
+        "match_name": "First Press Espresso Martini Mixer"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake hard with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "3 coffee beans",
+    "notes": "Your First Press concentrate is purpose-made for this.",
+    "tags": [
+      "after-dinner",
+      "shaken",
+      "sweet"
+    ]
+  },
+  {
+    "id": 44,
+    "name": "White Russian",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "20ml",
+        "match_name": "Kahl\u00faa Coffee Liqueur"
+      },
+      {
+        "item": "cream",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Build vodka and Kahl\u00faa in rocks glass over ice, float cream on top.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "after-dinner",
+      "built"
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Black Russian",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "20ml",
+        "match_name": "Kahl\u00faa Coffee Liqueur"
+      }
+    ],
+    "method": "Build in rocks glass over ice, stir.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "after-dinner",
+      "built"
+    ]
+  },
+  {
+    "id": 46,
+    "name": "B-52",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "coffee liqueur",
+        "amount": "15ml",
+        "match_name": "Kahl\u00faa Coffee Liqueur"
+      },
+      {
+        "item": "Baileys",
+        "amount": "15ml",
+        "match_name": "Baileys Original Irish Cream"
+      },
+      {
+        "item": "Grand Marnier",
+        "amount": "15ml"
+      }
+    ],
+    "method": "Layer carefully in shot glass: Kahl\u00faa, then Baileys, then Grand Marnier.",
+    "glass": "shot",
+    "garnish": "",
+    "notes": "Substitute Cointreau or Triple Sec for Grand Marnier \u2014 close enough.",
+    "tags": [
+      "sweet",
+      "shot"
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Godfather",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "scotch",
+        "amount": "45ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "amaretto",
+        "amount": "20ml",
+        "match_name": "Disaronno Originale"
+      }
+    ],
+    "method": "Build in rocks glass over ice, stir.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "spirit-forward",
+      "built",
+      "after-dinner"
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Amaretto Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "amaretto",
+        "amount": "45ml",
+        "match_name": "Disaronno Originale"
+      },
+      {
+        "item": "bourbon",
+        "amount": "20ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake if using egg, then shake with ice. Strain into rocks glass over ice.",
+    "glass": "rocks",
+    "garnish": "lemon peel, brandied cherry",
+    "notes": "Bourbon-spiked version (Jeffrey Morgenthaler).",
+    "tags": [
+      "sour",
+      "shaken",
+      "sweet"
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Rusty Nail",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "scotch",
+        "amount": "45ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "Drambuie",
+        "amount": "20ml",
+        "match_name": "Drambuie"
+      }
+    ],
+    "method": "Build in rocks glass over ice, stir.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "built",
+      "warming",
+      "after-dinner"
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Penicillin",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "blended scotch",
+        "amount": "60ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "Islay scotch",
+        "amount": "7ml float",
+        "match_sub_style": "islay"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "honey-ginger syrup",
+        "amount": "20ml"
+      }
+    ],
+    "method": "Shake scotch, lemon, honey-ginger with ice. Strain into rocks glass over ice. Float Islay on top.",
+    "glass": "rocks",
+    "garnish": "candied ginger (optional)",
+    "notes": "Honey-ginger syrup: equal parts honey, fresh ginger juice, water.",
+    "tags": [
+      "smoky",
+      "warming",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Rob Roy Smoky",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Islay scotch",
+        "amount": "60ml",
+        "match_sub_style": "islay"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Rob Roy with peated whisky.",
+    "tags": [
+      "smoky",
+      "stirred",
+      "spirit-forward"
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Smoky Old Fashioned",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Islay scotch",
+        "amount": "60ml",
+        "match_sub_style": "islay"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir all with ice in rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "smoky",
+      "spirit-forward",
+      "stirred"
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Hot Toddy",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "scotch or bourbon",
+        "amount": "45ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "honey",
+        "amount": "1 tsp"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "hot water",
+        "amount": "120ml"
+      }
+    ],
+    "method": "Combine in mug, stir until honey dissolves.",
+    "glass": "mug",
+    "garnish": "lemon wheel, clove-studded (optional)",
+    "notes": "",
+    "tags": [
+      "warming",
+      "built",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Irish Coffee",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Irish whiskey",
+        "amount": "45ml",
+        "match_sub_style": "irish"
+      },
+      {
+        "item": "hot coffee",
+        "amount": "120ml"
+      },
+      {
+        "item": "brown sugar",
+        "amount": "1 tsp"
+      },
+      {
+        "item": "lightly whipped cream",
+        "amount": "float"
+      }
+    ],
+    "method": "Stir whisky, coffee, sugar in heated glass. Float cream on top over a spoon.",
+    "glass": "Irish coffee glass",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "warming",
+      "built",
+      "after-dinner"
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Pimm's Cup",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Pimm's No. 1",
+        "amount": "50ml",
+        "match_name": "Pimm's No. 1 Cup"
+      },
+      {
+        "item": "lemonade or ginger ale",
+        "amount": "150ml"
+      }
+    ],
+    "method": "Build in highball over ice with cucumber, orange, mint, strawberry.",
+    "glass": "highball",
+    "garnish": "cucumber, mint, orange, strawberry",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "light",
+      "built",
+      "brunch"
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Cosmopolitan",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "citrus vodka",
+        "amount": "45ml",
+        "match_sub_style": "flavoured"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "15ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "cranberry juice",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel (flamed, optional)",
+    "notes": "Needs cranberry juice. Your Smirnoff Twisted Citrus fits the spec.",
+    "tags": [
+      "sour",
+      "citrusy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Lemon Drop",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "citrus vodka or vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "15ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into sugar-rimmed coupe.",
+    "glass": "coupe",
+    "garnish": "sugar rim, lemon twist",
+    "notes": "",
+    "tags": [
+      "sour",
+      "citrusy",
+      "shaken",
+      "sweet"
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Sherry Cobbler",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dry sherry-style fortified wine",
+        "amount": "90ml",
+        "match_name": "McWilliam's Royal Reserve Dry"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "orange slices",
+        "amount": "2"
+      }
+    ],
+    "method": "Muddle orange and syrup in shaker. Add sherry and ice, shake. Strain into wine glass packed with crushed ice.",
+    "glass": "wine",
+    "garnish": "berries, orange wheel, mint",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "shaken",
+      "brunch"
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Adonis",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dry sherry-style fortified wine",
+        "amount": "45ml",
+        "match_name": "McWilliam's Royal Reserve Dry"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "45ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "orange"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "light",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Bamboo",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dry sherry-style fortified wine",
+        "amount": "45ml",
+        "match_name": "McWilliam's Royal Reserve Dry"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "45ml",
+        "match_sub_style": "dry"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_sub_style": "orange"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Dry, low-ABV aperitif.",
+    "tags": [
+      "light",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Hanky Panky",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "45ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "45ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Fernet-Branca",
+        "amount": "7ml",
+        "match_name": "Fernet-Branca"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "stirred",
+      "herbal",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Toronto",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "60ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Fernet-Branca",
+        "amount": "7ml",
+        "match_name": "Fernet-Branca"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice (or coupe).",
+    "glass": "rocks or coupe",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "stirred",
+      "spirit-forward",
+      "warming"
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Black Manhattan",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "60ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Amaro Averna",
+        "amount": "30ml"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_sub_style": "aromatic"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_sub_style": "orange"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "brandied cherry",
+    "notes": "Missing Averna; Montenegro is a fair substitute (lighter, less bitter).",
+    "tags": [
+      "bitter",
+      "stirred",
+      "spirit-forward"
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Montenegro Sour",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Amaro Montenegro",
+        "amount": "60ml",
+        "match_name": "Amaro Montenegro"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake if using egg, then shake with ice. Strain into coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "sour",
+      "shaken",
+      "herbal"
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Sloe Gin Fizz",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "sloe gin",
+        "amount": "60ml",
+        "match_name": "Brookie's Byron Slow Gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Shake sloe gin, lemon, syrup with ice. Strain into highball over ice, top with soda.",
+    "glass": "highball",
+    "garnish": "lemon wheel",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 66,
+    "name": "Mint Julep",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "mint leaves",
+        "amount": "8-10"
+      }
+    ],
+    "method": "Gently muddle mint with syrup in julep cup. Add bourbon, fill with crushed ice, stir to chill until cup frosts.",
+    "glass": "julep cup or rocks",
+    "garnish": "mint bouquet",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "herbal",
+      "spirit-forward"
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Tequila Old Fashioned",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "a\u00f1ejo tequila",
+        "amount": "60ml",
+        "match_sub_style": "a\u00f1ejo"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "5ml",
+        "match_sub_style": "agave syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir all with ice in rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Oaxaca Old Fashioned",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "reposado tequila",
+        "amount": "45ml",
+        "match_sub_style": "reposado"
+      },
+      {
+        "item": "mezcal",
+        "amount": "15ml"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "5ml",
+        "match_sub_style": "agave syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "flamed orange peel",
+    "notes": "Missing mezcal \u2014 works as a tequila-only OF; add Laphroaig rinse for a similar smoky note.",
+    "tags": [
+      "smoky",
+      "spirit-forward",
+      "stirred"
+    ]
+  },
+  {
+    "id": 69,
+    "name": "Japanese Highball",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "Japanese whisky",
+        "amount": "45ml",
+        "match_sub_style": "japanese"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice (ideally large cubes), stir once briefly.",
+    "glass": "highball",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "built"
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Bourbon Smash",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "mint leaves",
+        "amount": "6-8"
+      }
+    ],
+    "method": "Muddle mint and syrup in shaker. Add bourbon, lemon, ice; shake. Strain into rocks glass over crushed ice.",
+    "glass": "rocks",
+    "garnish": "mint sprig",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "herbal",
+      "citrusy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Champs-\u00c9lys\u00e9es",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cognac",
+        "amount": "60ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "Green Chartreuse",
+        "amount": "15ml",
+        "match_name": "Green Chartreuse"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "",
+    "tags": [
+      "herbal",
+      "sour",
+      "shaken"
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Bicicletta",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "45ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "dry white wine",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in wine glass over ice, top with soda.",
+    "glass": "wine",
+    "garnish": "lemon slice",
+    "notes": "Needs white wine.",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Garibaldi",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "45ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "orange juice",
+        "amount": "120ml (fluffy)"
+      }
+    ],
+    "method": "Pour Campari into highball over ice. Top with vigorously aerated (blended or whipped) fresh OJ.",
+    "glass": "highball",
+    "garnish": "orange slice",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "brunch",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Pampelle Spritz",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Pampelle",
+        "amount": "60ml",
+        "match_name": "Pampelle Ruby Aperitif"
+      },
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in wine glass over ice, stir gently.",
+    "glass": "wine",
+    "garnish": "pink grapefruit slice",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Gold Rush",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "22ml"
+      },
+      {
+        "item": "honey syrup",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Air Mail",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "30ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "honey syrup",
+        "amount": "15ml"
+      },
+      {
+        "item": "champagne or prosecco",
+        "amount": "60ml"
+      }
+    ],
+    "method": "Shake rum, lime, honey with ice. Strain into flute, top with sparkling wine.",
+    "glass": "flute",
+    "garnish": "lime peel",
+    "notes": "",
+    "tags": [
+      "light",
+      "citrusy",
+      "brunch"
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Tequila & Tonic",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "50ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "tonic water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "built"
+    ]
+  },
+  {
+    "id": 78,
+    "name": "Toasted Almond",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "amaretto",
+        "amount": "30ml",
+        "match_name": "Disaronno Originale"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "30ml",
+        "match_name": "Kahl\u00faa Coffee Liqueur"
+      },
+      {
+        "item": "cream",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "after-dinner",
+      "shaken"
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Kir Royale",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Chambord or cr\u00e8me de cassis",
+        "amount": "10ml",
+        "match_name": "Chambord"
+      },
+      {
+        "item": "champagne or prosecco",
+        "amount": "120ml"
+      }
+    ],
+    "method": "Pour liqueur into flute, top with sparkling wine.",
+    "glass": "flute",
+    "garnish": "",
+    "notes": "Cassis is traditional; Chambord works.",
+    "tags": [
+      "light",
+      "sweet",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Black Manhattan",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon or rye",
+        "amount": "60ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "Amaro Averna",
+        "amount": "30ml",
+        "match_name": "Amaro Averna"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_name": "Angostura Aromatic Bitters"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_name": "Angostura Orange Bitters"
+      }
+    ],
+    "method": "Stir with ice until well-chilled, strain into a chilled coupe.",
+    "glass": "coupe",
+    "garnish": "brandied cherry or orange peel",
+    "notes": "Todd Smith, Bourbon & Branch (2007). Averna replaces sweet vermouth.",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Averna Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "Amaro Averna",
+        "amount": "60ml",
+        "match_name": "Amaro Averna"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "simple syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white (optional)",
+        "amount": "1"
+      }
+    ],
+    "method": "Dry shake if using egg white, then shake hard with ice. Double-strain into a coupe.",
+    "glass": "coupe",
+    "garnish": "3 drops Angostura on the foam",
+    "notes": "Bittersweet, lower-ABV sour. Skip egg white for a punchier, sharper drink.",
+    "tags": [
+      "bitter",
+      "sour",
+      "shaken",
+      "lower-abv"
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Rhubarb & Ginger G&T",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "Whitley Neill Rhubarb & Ginger Gin",
+        "amount": "45ml",
+        "match_name": "Whitley Neill Rhubarb & Ginger Gin"
+      },
+      {
+        "item": "tonic water",
+        "amount": "to top (~120ml)"
+      }
+    ],
+    "method": "Build over plenty of ice in a highball or copa, stir briefly.",
+    "glass": "highball",
+    "garnish": "orange wheel + sprig of rosemary or thin ginger slice",
+    "notes": "Premium tonic (Fever-Tree Mediterranean or similar) recommended.",
+    "tags": [
+      "light",
+      "refreshing",
+      "built",
+      "highball"
+    ]
+  },
+  {
+    "id": 83,
+    "name": "Rhubarb Collins",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "Whitley Neill Rhubarb & Ginger Gin",
+        "amount": "45ml",
+        "match_name": "Whitley Neill Rhubarb & Ginger Gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "simple syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "soda water",
+        "amount": "to top"
+      }
+    ],
+    "method": "Shake gin, lemon and syrup with ice. Strain into a Collins glass over fresh ice, top with soda.",
+    "glass": "collins",
+    "garnish": "lemon wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "refreshing",
+      "shaken",
+      "highball"
+    ]
+  },
+  {
+    "id": 84,
+    "name": "Bloody Cello Spritz",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "Departed Spirits \"Bloody Cello\"",
+        "amount": "60ml",
+        "match_name": "Departed Spirits \"Bloody Cello\""
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in a large wine glass over ice. Stir gently.",
+    "glass": "wine",
+    "garnish": "orange wheel",
+    "notes": "Aperol-Spritz-style serve; the chilli warmth comes through on the finish.",
+    "tags": [
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 85,
+    "name": "Bloody Margarita",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "tequila (blanco or reposado)",
+        "amount": "45ml",
+        "match_category": "tequila"
+      },
+      {
+        "item": "Departed Spirits \"Bloody Cello\"",
+        "amount": "20ml",
+        "match_name": "Departed Spirits \"Bloody Cello\""
+      },
+      {
+        "item": "lime juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "simple syrup",
+        "amount": "5ml (to taste)",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake hard with ice. Strain into a rocks glass over fresh ice (or coupe, no ice).",
+    "glass": "rocks",
+    "garnish": "chilli-salt half-rim, lime wheel",
+    "notes": "Bloody Cello replaces triple sec; the ancho chilli matches a Tajin-style rim.",
+    "tags": [
+      "sour",
+      "spicy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 86,
+    "name": "Barrel-Aged Negroni (serve)",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Barrel-Aged Negroni",
+        "amount": "75ml",
+        "match_name": "Barrel-Aged Negroni"
+      }
+    ],
+    "method": "Pour over a large ice cube. Optional: stir for a few seconds with ice.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "Pre-made and rested in oak. Serve straight from the barrel/bottle.",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 87,
+    "name": "Barrel-Aged Vieux Carr\u00e9 (serve)",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Barrel-Aged Vieux Carr\u00e9",
+        "amount": "75ml",
+        "match_name": "Barrel-Aged Vieux Carr\u00e9"
+      }
+    ],
+    "method": "Pour over a large ice cube. Optional: stir briefly with ice.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "Pre-made and rested in oak. Serve straight from the barrel/bottle.",
+    "tags": [
+      "spirit-forward",
+      "warming",
+      "built"
+    ]
+  }
+]

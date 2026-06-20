@@ -1,0 +1,4383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bar</title>
+<!--
+  Home Bar Tool — design choices:
+
+  1. Aesthetic: refined utilitarian / terminal-adjacent. Dark by default.
+     Dense rows over big photo cards. Mono for data, serif for cocktail
+     names so they read like recipes, not log lines.
+
+  2. Matching logic (the only non-trivial bit):
+     An ingredient is "matched" iff at least one bottle in inventory
+     satisfies one of:
+       - match_name === bottle.name
+       - match_category === bottle.category
+       - match_sub_style === bottle.sub_style
+     If the ingredient has NO match_* fields, it's treated as
+     "assumed available" — fresh stuff (citrus, egg, mint), mixers
+     (soda, tonic, cola, prosecco), or cocktails.json's real gaps
+     (mezcal, orgeat, maraschino, Amaro Nonino, etc).
+     The author of cocktails.json deliberately didn't add match_*
+     fields for those — so I respect that. Tell me if you want
+     stricter checking.
+
+     "missing_count" = number of ingredients that DID specify match_*
+     fields but found nothing in inventory.
+       - makeable now: missing_count === 0
+       - one away:    missing_count === 1
+       - all:         everything
+
+  3. Multi-match: when an ingredient could be satisfied by N>1 bottles
+     (e.g. "gin" matches 11 of your gins), default shows the first
+     and a "(N options)" pill — click the pill to pick a specific one.
+     Choice is persisted to localStorage per (cocktail, ingredient).
+
+  4. No external CSS/JS. Two fetches: inventory.json + cocktails.json.
+
+  5. Dense table-y layout, sticky header, fast filtering — all
+     in-memory, no debouncing needed for this data size (~100 + ~80).
+-->
+<style>
+  :root {
+    --bg: #0e0f12;
+    --bg-1: #15171c;
+    --bg-2: #1c1f26;
+    --bg-hover: #232730;
+    --border: #2a2e38;
+    --border-2: #383d49;
+    --fg: #e6e6e6;
+    --fg-dim: #9ca3af;
+    --fg-dimmer: #6b7280;
+    --accent: #d4a574;      /* warm amber, like backbar light */
+    --accent-dim: #8a6d4a;
+    --green: #7fb069;
+    --red: #c87878;
+    --yellow: #d4b574;
+    --mono: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+    --serif: "Cormorant Garamond", "Iowan Old Style", "Palatino", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100vh;
+  }
+
+  /* ===== Header ===== */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg-1);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+  }
+  .header-row {
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    margin-right: 4px;
+  }
+  .view-toggle {
+    display: flex;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .view-toggle button {
+    background: transparent;
+    border: 0;
+    color: var(--fg-dim);
+    padding: 6px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+  }
+  .view-toggle button.active {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .stats {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .stats b { color: var(--accent); font-weight: normal; }
+
+  /* ===== Controls row ===== */
+  .controls {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .controls input[type="text"],
+  .controls select {
+    background: var(--bg-1);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 6px 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+  }
+  .controls input[type="text"]:focus,
+  .controls select:focus {
+    border-color: var(--accent-dim);
+  }
+  .controls input[type="text"] {
+    min-width: 200px;
+    flex: 1 1 200px;
+    max-width: 360px;
+  }
+  .pill-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    background: var(--bg-1);
+    color: var(--fg-dim);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .pill:hover { background: var(--bg-hover); color: var(--fg); }
+  .pill.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== My Bar view ===== */
+  .bar-list {
+    padding: 0;
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 60px 1.3fr 1fr 110px 130px 1.2fr;
+    gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+    font-size: 13px;
+  }
+  .bar-row:hover { background: var(--bg-1); }
+  .bar-row .id {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dimmer);
+  }
+  .bar-row .name { font-weight: 500; }
+  .bar-row .producer { color: var(--fg-dim); font-size: 12px; }
+  .bar-row .cat-pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--accent);
+  }
+  .bar-row .substyle {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .bar-row .notes {
+    color: var(--fg-dimmer);
+    font-size: 12px;
+    font-style: italic;
+  }
+  .bar-header {
+    display: grid;
+    grid-template-columns: 60px 1.3fr 1fr 110px 130px 1.2fr;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--bg-1);
+    border-bottom: 1px solid var(--border-2);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--fg-dimmer);
+    position: sticky;
+    top: 96px;
+    z-index: 5;
+  }
+
+  /* ===== Cocktails view ===== */
+  .cocktails-list {
+    padding: 8px 16px 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 8px;
+  }
+  .cocktail {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    position: relative;
+  }
+  .cocktail.unmakeable {
+    opacity: 0.55;
+    border-style: dashed;
+  }
+  .cocktail.oneaway {
+    border-left: 2px solid var(--yellow);
+  }
+  .cocktail.makeable {
+    border-left: 2px solid var(--green);
+  }
+  .cocktail .title-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .cocktail h3 {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.1;
+    color: var(--fg);
+  }
+  .cocktail .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .badge.makeable {
+    background: rgba(127,176,105,0.15);
+    color: var(--green);
+    border: 1px solid rgba(127,176,105,0.3);
+  }
+  .badge.oneaway {
+    background: rgba(212,181,116,0.15);
+    color: var(--yellow);
+    border: 1px solid rgba(212,181,116,0.3);
+  }
+  .badge.unmakeable {
+    background: rgba(200,120,120,0.15);
+    color: var(--red);
+    border: 1px solid rgba(200,120,120,0.3);
+  }
+  .cocktail .category {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--fg-dimmer);
+    margin-bottom: 8px;
+  }
+  .ingredients {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+    border-top: 1px dotted var(--border);
+    border-bottom: 1px dotted var(--border);
+    padding: 6px 0;
+  }
+  .ingredients li {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 8px;
+    padding: 2px 0;
+    font-size: 12px;
+    align-items: baseline;
+  }
+  .ingredients .amt {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .ingredients .ing {
+    color: var(--fg);
+  }
+  .ingredients .bottle {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    display: inline;
+  }
+  .ingredients .bottle::before {
+    content: "→ ";
+    color: var(--fg-dimmer);
+  }
+  .ingredients .missing {
+    color: var(--red);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-style: italic;
+  }
+  .ingredients .missing::before {
+    content: "✗ missing ";
+    color: var(--fg-dimmer);
+    font-style: normal;
+  }
+  .ingredients .assumed {
+    color: var(--fg-dimmer);
+    font-size: 11px;
+    font-style: italic;
+  }
+  .options-link {
+    background: var(--bg-2);
+    color: var(--accent);
+    border: 1px solid var(--border-2);
+    border-radius: 2px;
+    padding: 0 6px;
+    margin-left: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+  }
+  .options-link:hover {
+    background: var(--bg-hover);
+  }
+  .method {
+    font-size: 12px;
+    color: var(--fg-dim);
+    margin: 6px 0;
+    line-height: 1.5;
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 4px;
+  }
+  .meta span { margin-right: 10px; }
+  .meta b { color: var(--fg-dim); font-weight: normal; }
+  .tags {
+    margin-top: 6px;
+    display: flex; flex-wrap: wrap; gap: 3px;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--fg-dimmer);
+    background: var(--bg-2);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+  .note {
+    font-size: 11px;
+    color: var(--fg-dimmer);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* ===== Modal for bottle picker ===== */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--bg-1);
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .modal h4 {
+    margin: 0 0 4px;
+    font-family: var(--serif);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--accent);
+  }
+  .modal .sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    margin-bottom: 12px;
+  }
+  .modal-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .modal-option:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+  }
+  .modal-option.selected {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .modal-option .sub2 {
+    color: var(--fg-dimmer);
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  /* ===== Hidden helpers ===== */
+  .hidden { display: none !important; }
+  .empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--fg-dimmer);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  /* ===== Mobile ===== */
+  @media (max-width: 720px) {
+    .bar-row, .bar-header {
+      grid-template-columns: 1fr;
+      gap: 2px;
+      padding: 10px 12px;
+    }
+    .bar-header { display: none; }
+    .bar-row .id { display: none; }
+    .bar-row .producer::before { content: "by "; color: var(--fg-dimmer); }
+    .bar-row .substyle::before { content: "style: "; color: var(--fg-dimmer); }
+    .cocktails-list {
+      grid-template-columns: 1fr;
+      padding: 8px 12px 32px;
+    }
+    .controls { padding: 8px 12px; }
+    header { padding: 8px 12px; }
+    .stats { margin-left: 0; width: 100%; }
+    .brand { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="brand">backbar</div>
+    <div class="view-toggle">
+      <button id="view-bar" class="active">My Bar</button>
+      <button id="view-cocktails">Cocktails</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<!-- My Bar controls -->
+<div class="controls" id="bar-controls">
+  <input type="text" id="bar-search" placeholder="search name / producer / notes...">
+  <span class="label">category:</span>
+  <div class="pill-group" id="bar-cat-filters"></div>
+</div>
+
+<!-- Cocktail controls -->
+<div class="controls hidden" id="cocktail-controls">
+  <input type="text" id="cocktail-search" placeholder="search cocktail name...">
+  <span class="label">show:</span>
+  <div class="pill-group">
+    <button class="pill active" data-mode="makeable">makeable</button>
+    <button class="pill" data-mode="oneaway">+ one away</button>
+    <button class="pill" data-mode="all">all</button>
+  </div>
+  <span class="label">sort:</span>
+  <select id="cocktail-sort">
+    <option value="name">name</option>
+    <option value="category">category</option>
+    <option value="ingredients">ingredient count</option>
+  </select>
+  <span class="label" style="width:100%; margin-top:4px;">tags (any):</span>
+  <div class="pill-group" id="tag-filters" style="width:100%"></div>
+</div>
+
+<!-- My Bar view -->
+<div id="bar-view">
+  <div class="bar-header">
+    <div>id</div><div>name</div><div>producer</div>
+    <div>category</div><div>sub-style</div><div>notes</div>
+  </div>
+  <div class="bar-list" id="bar-list"></div>
+</div>
+
+<!-- Cocktails view -->
+<div id="cocktails-view" class="hidden">
+  <div class="cocktails-list" id="cocktails-list"></div>
+</div>
+
+<!-- Bottle picker modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h4 id="modal-title"></h4>
+    <div class="sub" id="modal-sub"></div>
+    <div id="modal-options"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// State
+// ============================================================
+let inventory = [];
+let cocktails = [];
+let bottleChoices = {}; // { "cocktailId:ingIdx": bottleId }
+const LS_KEY = "backbar.bottleChoices";
+
+let view = "bar"; // "bar" | "cocktails"
+
+// Bar view state
+let barSearch = "";
+let barCatFilter = null; // null = all
+
+// Cocktail view state
+let cocktailSearch = "";
+let cocktailMode = "makeable"; // makeable | oneaway | all
+let cocktailSort = "name";
+let tagFilters = new Set();
+
+// ============================================================
+// Load
+// ============================================================
+// Data baked in (option 2: self-contained, no fetch).
+// Regenerate this file when inventory.json or cocktails.json changes.
+const INVENTORY_DATA = [
+  {
+    "id": 1,
+    "name": "Imitation Grenadine",
+    "producer": "Cawsey's",
+    "category": "syrup",
+    "sub_style": "grenadine",
+    "notes": "Flavoured cordial; 300mL"
+  },
+  {
+    "id": 2,
+    "name": "Glayva",
+    "producer": "Glayva",
+    "category": "liqueur",
+    "sub_style": "whisky liqueur",
+    "notes": "Scotch whisky liqueur with heather honey/herbs/spices"
+  },
+  {
+    "id": 3,
+    "name": "Amaro Montenegro",
+    "producer": "Montenegro",
+    "category": "amaro",
+    "sub_style": "",
+    "notes": "Premiata 1885; 40 botanicals; Bologna, Italia"
+  },
+  {
+    "id": 4,
+    "name": "Triple Sec",
+    "producer": "Continental",
+    "category": "liqueur",
+    "sub_style": "orange liqueur",
+    "notes": "500mL"
+  },
+  {
+    "id": 5,
+    "name": "Sugar Syrup",
+    "producer": "Cawsey's",
+    "category": "syrup",
+    "sub_style": "simple syrup",
+    "notes": "Non-alcoholic"
+  },
+  {
+    "id": 6,
+    "name": "Cocktail Simple Syrup",
+    "producer": "Crawley's Bartender",
+    "category": "syrup",
+    "sub_style": "simple syrup",
+    "notes": "750mL; The Simple Syrup Co., Sydney"
+  },
+  {
+    "id": 7,
+    "name": "Hennessy VS Cognac",
+    "producer": "Hennessy",
+    "category": "brandy",
+    "sub_style": "cognac",
+    "notes": "Very Special; 700mL"
+  },
+  {
+    "id": 8,
+    "name": "St-Rémy VSOP",
+    "producer": "St-Rémy",
+    "category": "brandy",
+    "sub_style": "french brandy",
+    "notes": "VSOP; 700mL; Produit de France"
+  },
+  {
+    "id": 9,
+    "name": "Lime Juice Cordial",
+    "producer": "Bickford's",
+    "category": "juice",
+    "sub_style": "lime cordial",
+    "notes": "750mL; Australian made"
+  },
+  {
+    "id": 10,
+    "name": "Bartender Agave Syrup",
+    "producer": "Crawley's Bartender",
+    "category": "syrup",
+    "sub_style": "agave syrup",
+    "notes": "750mL; The Simple Syrup Co., Sydney"
+  },
+  {
+    "id": 11,
+    "name": "Kahlúa Coffee Liqueur",
+    "producer": "Kahlúa",
+    "category": "liqueur",
+    "sub_style": "coffee liqueur",
+    "notes": "700mL; 20% ABV; product of Mexico"
+  },
+  {
+    "id": 12,
+    "name": "La Playa Butterscotch Schnapps",
+    "producer": "N.G. Kallikounis",
+    "category": "liqueur",
+    "sub_style": "butterscotch",
+    "notes": "100mL; 21% ABV; Kalamata, Greece"
+  },
+  {
+    "id": 13,
+    "name": "La Playa Apricot Liqueur",
+    "producer": "N.G. Kallikounis",
+    "category": "liqueur",
+    "sub_style": "apricot",
+    "notes": "100mL; 24% ABV; Kalamata, Greece"
+  },
+  {
+    "id": 14,
+    "name": "Midori Melon Liqueur",
+    "producer": "Suntory",
+    "category": "liqueur",
+    "sub_style": "melon",
+    "notes": "375mL; 21% ABV"
+  },
+  {
+    "id": 15,
+    "name": "Frangelico",
+    "producer": "Barbero 1891",
+    "category": "liqueur",
+    "sub_style": "hazelnut",
+    "notes": "350mL; 24% ABV; Italy"
+  },
+  {
+    "id": 16,
+    "name": "Pampelle Ruby Aperitif",
+    "producer": "Pampelle",
+    "category": "liqueur",
+    "sub_style": "grapefruit aperitif",
+    "notes": "700mL; 15% ABV; France"
+  },
+  {
+    "id": 17,
+    "name": "Vok Brown Crème de Cacao",
+    "producer": "Vok",
+    "category": "liqueur",
+    "sub_style": "crème de cacao",
+    "notes": "500mL; 20% ABV"
+  },
+  {
+    "id": 18,
+    "name": "Pimm's No. 1 Cup",
+    "producer": "Pimm's",
+    "category": "liqueur",
+    "sub_style": "aperitif",
+    "notes": "700mL; 25% ABV; UK; gin-based"
+  },
+  {
+    "id": 19,
+    "name": "Green Fairy Absinth",
+    "producer": "Green Fairy",
+    "category": "other",
+    "sub_style": "absinthe",
+    "notes": "500mL; Czech absinthe"
+  },
+  {
+    "id": 20,
+    "name": "Vok White Crème de Cacao",
+    "producer": "Vok",
+    "category": "liqueur",
+    "sub_style": "crème de cacao",
+    "notes": "500mL; 20% ABV"
+  },
+  {
+    "id": 21,
+    "name": "Belvoir Elderflower Cordial",
+    "producer": "Belvoir Fruit Farms",
+    "category": "syrup",
+    "sub_style": "elderflower cordial",
+    "notes": "500mL; infusion of flowers and lemon"
+  },
+  {
+    "id": 22,
+    "name": "McWilliam's Royal Reserve Dry",
+    "producer": "McWilliam's",
+    "category": "other",
+    "sub_style": "sherry-style fortified wine",
+    "notes": "Australian fortified wine; dry apera/sherry-style"
+  },
+  {
+    "id": 23,
+    "name": "Fernet-Branca",
+    "producer": "Fratelli Branca",
+    "category": "amaro",
+    "sub_style": "fernet",
+    "notes": "Milano; produced in Italy"
+  },
+  {
+    "id": 24,
+    "name": "Fee Brothers Aztec Chocolate Bitters",
+    "producer": "Fee Brothers",
+    "category": "bitters",
+    "sub_style": "chocolate",
+    "notes": "150mL (5 fl oz); 2.55% ABV"
+  },
+  {
+    "id": 25,
+    "name": "Angostura Aromatic Bitters",
+    "producer": "Angostura",
+    "category": "bitters",
+    "sub_style": "aromatic",
+    "notes": "200mL; 44.7% ABV; Trinidad & Tobago"
+  },
+  {
+    "id": 26,
+    "name": "Peychaud's Aromatic Cocktail Bitters",
+    "producer": "L.E. Jung and Wolff Co.",
+    "category": "bitters",
+    "sub_style": "aromatic",
+    "notes": "296mL (10 fl oz); 35% ABV; New Orleans"
+  },
+  {
+    "id": 27,
+    "name": "Australian Bitters Company Aromatic Bitters",
+    "producer": "Australian Bitters Company",
+    "category": "bitters",
+    "sub_style": "aromatic",
+    "notes": "250mL; 45% ABV; hand-crafted"
+  },
+  {
+    "id": 28,
+    "name": "Angostura Orange Bitters",
+    "producer": "Angostura",
+    "category": "bitters",
+    "sub_style": "orange",
+    "notes": "100mL; 28% ABV; Trinidad & Tobago"
+  },
+  {
+    "id": 29,
+    "name": "Imbroglio",
+    "producer": "Poor Toms",
+    "category": "liqueur",
+    "sub_style": "aperitif",
+    "notes": "500mL; 25% ABV; Italian-Australian aperitivo, Sydney"
+  },
+  {
+    "id": 30,
+    "name": "Chambord",
+    "producer": "Chambord",
+    "category": "liqueur",
+    "sub_style": "black raspberry",
+    "notes": "500mL; Produit de France"
+  },
+  {
+    "id": 31,
+    "name": "Belvedere Vodka",
+    "producer": "Belvedere",
+    "category": "vodka",
+    "sub_style": "",
+    "notes": "700mL; 40% ABV; Poland"
+  },
+  {
+    "id": 32,
+    "name": "Campari",
+    "producer": "Campari",
+    "category": "liqueur",
+    "sub_style": "bitter aperitivo",
+    "notes": "Since 1860; Milano; bitter"
+  },
+  {
+    "id": 33,
+    "name": "1800 Añejo Tequila",
+    "producer": "1800",
+    "category": "tequila",
+    "sub_style": "añejo",
+    "notes": "700mL; 38% ABV; 100% agave; aged in French and American oak"
+  },
+  {
+    "id": 34,
+    "name": "Maker's Mark",
+    "producer": "Maker's Mark",
+    "category": "whisky",
+    "sub_style": "bourbon",
+    "notes": "700mL and 1L bottles present; 40% ABV; Kentucky straight bourbon; Loretto, KY"
+  },
+  {
+    "id": 35,
+    "name": "Vok Blue Curaçao",
+    "producer": "Vok",
+    "category": "liqueur",
+    "sub_style": "blue curaçao",
+    "notes": "Blue"
+  },
+  {
+    "id": 36,
+    "name": "Opal Bianca",
+    "producer": "Opal Bianca",
+    "category": "liqueur",
+    "sub_style": "sambuca",
+    "notes": "Original White; Liquore alla Sambuca"
+  },
+  {
+    "id": 37,
+    "name": "Galliano Black Sambuca",
+    "producer": "Galliano",
+    "category": "liqueur",
+    "sub_style": "sambuca",
+    "notes": "350mL; 30% ABV; Livorno 1896; black sambuca, distilled in Italy"
+  },
+  {
+    "id": 38,
+    "name": "Bacardí Carta Blanca",
+    "producer": "Bacardí",
+    "category": "rum",
+    "sub_style": "white",
+    "notes": "37.5% ABV; Santiago; made in Puerto Rico; also marketed as Bacardí Superior"
+  },
+  {
+    "id": 39,
+    "name": "Green Chartreuse",
+    "producer": "Chartreuse Diffusion",
+    "category": "liqueur",
+    "sub_style": "herbal",
+    "notes": "1L; 55% ABV; Voiron, France"
+  },
+  {
+    "id": 40,
+    "name": "Galliano L'Autentico",
+    "producer": "Arturo Vaccari",
+    "category": "liqueur",
+    "sub_style": "herbal",
+    "notes": "500mL; 35% ABV; produce of Italy"
+  },
+  {
+    "id": 41,
+    "name": "The Gospel Solera Rye",
+    "producer": "The Gospel",
+    "category": "whisky",
+    "sub_style": "rye",
+    "notes": "700mL; 42.5% ABV; Australian"
+  },
+  {
+    "id": 42,
+    "name": "Laphroaig The 1815 Legacy Edition",
+    "producer": "Laphroaig",
+    "category": "whisky",
+    "sub_style": "islay",
+    "notes": "48% ABV; travel retail exclusive"
+  },
+  {
+    "id": 43,
+    "name": "Jägermeister",
+    "producer": "Jägermeister",
+    "category": "liqueur",
+    "sub_style": "herbal",
+    "notes": "1L; 35% ABV; Sydney limited edition bottle"
+  },
+  {
+    "id": 44,
+    "name": "Fireball Cinnamon Whisky",
+    "producer": "Fireball",
+    "category": "liqueur",
+    "sub_style": "cinnamon whisky",
+    "notes": "1L; cinnamon-flavoured whisky liqueur"
+  },
+  {
+    "id": 45,
+    "name": "Cîroc Snap Frost Vodka",
+    "producer": "Cîroc",
+    "category": "vodka",
+    "sub_style": "grape",
+    "notes": "750mL; distilled from French grapes; 5 times distilled"
+  },
+  {
+    "id": 46,
+    "name": "Southern Comfort Original",
+    "producer": "Southern Comfort",
+    "category": "liqueur",
+    "sub_style": "whiskey liqueur",
+    "notes": "700mL; New Orleans"
+  },
+  {
+    "id": 47,
+    "name": "Jameson Cold Brew",
+    "producer": "Jameson",
+    "category": "liqueur",
+    "sub_style": "whiskey liqueur",
+    "notes": "Irish whiskey with cold brew coffee; dry liqueur"
+  },
+  {
+    "id": 48,
+    "name": "Aperol",
+    "producer": "Fratelli Barbieri",
+    "category": "liqueur",
+    "sub_style": "bitter aperitivo",
+    "notes": "Aperitivo dal 1919; Padova"
+  },
+  {
+    "id": 49,
+    "name": "Captain Morgan Black Label Jamaica Rum O.P.",
+    "producer": "Captain Morgan",
+    "category": "rum",
+    "sub_style": "overproof",
+    "notes": "1125mL; 57.2% ABV; Jamaica rum, bottled in Australia"
+  },
+  {
+    "id": 50,
+    "name": "Rémy Martin VSOP",
+    "producer": "Rémy Martin",
+    "category": "brandy",
+    "sub_style": "cognac",
+    "notes": "Fine Champagne; Product of France; Maison fondée en 1724"
+  },
+  {
+    "id": 51,
+    "name": "Oxley Cold Distilled London Dry Gin",
+    "producer": "Oxley",
+    "category": "gin",
+    "sub_style": "london dry",
+    "notes": "1L; 47% ABV; Recipe No. 38; Product of England"
+  },
+  {
+    "id": 52,
+    "name": "Belvedere Organic Vodka",
+    "producer": "Belvedere",
+    "category": "vodka",
+    "sub_style": "",
+    "notes": "1L; 40% ABV; Poland"
+  },
+  {
+    "id": 53,
+    "name": "Glenmorangie The Elementa 14",
+    "producer": "Glenmorangie",
+    "category": "whisky",
+    "sub_style": "highland",
+    "notes": "1L; aged 14 years; new charred oak cask finish"
+  },
+  {
+    "id": 54,
+    "name": "Glenmorangie Finest Reserve 19",
+    "producer": "Glenmorangie",
+    "category": "whisky",
+    "sub_style": "highland",
+    "notes": "700mL; 43% ABV; aged 19 years"
+  },
+  {
+    "id": 55,
+    "name": "The Balvenie DoubleWood 12",
+    "producer": "The Balvenie",
+    "category": "whisky",
+    "sub_style": "speyside",
+    "notes": "Aged 12 years; matured in two distinct casks; Banffshire; The Original Cask Finish"
+  },
+  {
+    "id": 56,
+    "name": "Aberlour A'Bunadh",
+    "producer": "Aberlour",
+    "category": "whisky",
+    "sub_style": "speyside",
+    "notes": "60.8% ABV; batch no. 61; cask strength; Spanish Oloroso sherry butts; non chill-filtered"
+  },
+  {
+    "id": 57,
+    "name": "Jameson Irish Whiskey",
+    "producer": "Jameson",
+    "category": "whisky",
+    "sub_style": "irish",
+    "notes": "1L; triple distilled; product of Ireland"
+  },
+  {
+    "id": 58,
+    "name": "Eagle Rare",
+    "producer": "Eagle Rare",
+    "category": "whisky",
+    "sub_style": "bourbon",
+    "notes": "Kentucky straight bourbon"
+  },
+  {
+    "id": 59,
+    "name": "American Eagle 4 Year",
+    "producer": "American Eagle",
+    "category": "whisky",
+    "sub_style": "bourbon",
+    "notes": "700mL; 40% ABV; aged 4 years; Tennessee bourbon"
+  },
+  {
+    "id": 60,
+    "name": "Baileys Original Irish Cream",
+    "producer": "Baileys",
+    "category": "liqueur",
+    "sub_style": "cream liqueur",
+    "notes": "1L; 17% ABV; product of Ireland"
+  },
+  {
+    "id": 61,
+    "name": "Chivas Regal Extra",
+    "producer": "Chivas Regal",
+    "category": "whisky",
+    "sub_style": "blended scotch",
+    "notes": "700mL; 40% ABV; selectively matured in sherry casks"
+  },
+  {
+    "id": 62,
+    "name": "Lagavulin 8",
+    "producer": "Lagavulin",
+    "category": "whisky",
+    "sub_style": "islay",
+    "notes": "Aged 8 years"
+  },
+  {
+    "id": 63,
+    "name": "Lagavulin 16",
+    "producer": "Lagavulin",
+    "category": "whisky",
+    "sub_style": "islay",
+    "notes": "Aged 16 years"
+  },
+  {
+    "id": 64,
+    "name": "Laphroaig PX Cask",
+    "producer": "Laphroaig",
+    "category": "whisky",
+    "sub_style": "islay",
+    "notes": "48% ABV; triple matured; Pedro Ximénez sherry finish; travel retail exclusive"
+  },
+  {
+    "id": 65,
+    "name": "Laphroaig Four Oak",
+    "producer": "Laphroaig",
+    "category": "whisky",
+    "sub_style": "islay",
+    "notes": "40% ABV; matured in four different casks; travel retail exclusive"
+  },
+  {
+    "id": 66,
+    "name": "Loch Lomond 12",
+    "producer": "Loch Lomond",
+    "category": "whisky",
+    "sub_style": "highland",
+    "notes": "Aged 12 years; non chill-filtered; American oak"
+  },
+  {
+    "id": 67,
+    "name": "Glenfiddich 18",
+    "producer": "Glenfiddich",
+    "category": "whisky",
+    "sub_style": "speyside",
+    "notes": "1L; 43% ABV; aged 18 years; Dufftown, Banffshire"
+  },
+  {
+    "id": 68,
+    "name": "Fuji Single Grain Japanese Whiskey",
+    "producer": "Kirin",
+    "category": "whisky",
+    "sub_style": "japanese",
+    "notes": "700mL; 46% ABV; from Mt. Fuji Distillery"
+  },
+  {
+    "id": 69,
+    "name": "Toki Suntory Whisky",
+    "producer": "Suntory",
+    "category": "whisky",
+    "sub_style": "japanese",
+    "notes": "700mL; 43% ABV; blended Japanese whisky"
+  },
+  {
+    "id": 70,
+    "name": "Bear Hug Tequila Infusion Papaya",
+    "producer": "Bear Hug",
+    "category": "liqueur",
+    "sub_style": "tequila-based",
+    "notes": "750mL; 21% ABV; 3x distilled blue agave tequila infused with papaya"
+  },
+  {
+    "id": 71,
+    "name": "Disaronno Originale",
+    "producer": "Illva Saronno",
+    "category": "liqueur",
+    "sub_style": "amaretto",
+    "notes": "700mL; 20% ABV; Italian almond liqueur"
+  },
+  {
+    "id": 72,
+    "name": "Avión Silver",
+    "producer": "Avión",
+    "category": "tequila",
+    "sub_style": "blanco",
+    "notes": "750mL; 40% ABV; small batch; Highlands agave"
+  },
+  {
+    "id": 73,
+    "name": "Jack Daniel's Old No. 7",
+    "producer": "Jack Daniel's",
+    "category": "whisky",
+    "sub_style": "bourbon",
+    "notes": "1L; 40% ABV; Tennessee sour mash; Lynchburg"
+  },
+  {
+    "id": 74,
+    "name": "Brookie's Byron Slow Gin",
+    "producer": "Brookie's",
+    "category": "gin",
+    "sub_style": "sloe gin",
+    "notes": "700mL; 26% ABV; limited edition; Davidson plum (Byron Bay, Australia)"
+  },
+  {
+    "id": 75,
+    "name": "Smirnoff Twisted Citrus",
+    "producer": "Smirnoff",
+    "category": "vodka",
+    "sub_style": "flavoured",
+    "notes": "Citrus flavoured vodka"
+  },
+  {
+    "id": 76,
+    "name": "The Botanist Islay Dry Gin",
+    "producer": "The Botanist",
+    "category": "gin",
+    "sub_style": "islay dry",
+    "notes": "46% ABV; foraged island botanicals; Islay, Scotland"
+  },
+  {
+    "id": 77,
+    "name": "The Kraken Black Spiced Rum",
+    "producer": "The Kraken",
+    "category": "rum",
+    "sub_style": "spiced",
+    "notes": "700mL; 40% ABV"
+  },
+  {
+    "id": 78,
+    "name": "Sipsmith London Dry Gin",
+    "producer": "Sipsmith",
+    "category": "gin",
+    "sub_style": "london dry",
+    "notes": "1L; 44.1% ABV; hand-crafted in small batches; exclusive for travel retail"
+  },
+  {
+    "id": 79,
+    "name": "Absolut Mango",
+    "producer": "Absolut",
+    "category": "vodka",
+    "sub_style": "flavoured",
+    "notes": "1L; 40% ABV; mango flavoured; Sweden"
+  },
+  {
+    "id": 80,
+    "name": "The Glenlivet Founder's Reserve",
+    "producer": "The Glenlivet",
+    "category": "whisky",
+    "sub_style": "speyside",
+    "notes": "700mL; 40% ABV; American oak selection"
+  },
+  {
+    "id": 81,
+    "name": "La Gritona Tequila Reposado",
+    "producer": "La Gritona",
+    "category": "tequila",
+    "sub_style": "reposado",
+    "notes": "100% agave azul"
+  },
+  {
+    "id": 82,
+    "name": "Santiago de Cuba Añejo",
+    "producer": "Santiago de Cuba",
+    "category": "rum",
+    "sub_style": "aged",
+    "notes": "700mL; 38% ABV; Cuba; D.O.P."
+  },
+  {
+    "id": 83,
+    "name": "Mr Black Coffee Amaro",
+    "producer": "Mr Black",
+    "category": "liqueur",
+    "sub_style": "coffee liqueur",
+    "notes": "700mL; 28.5% ABV; special edition; Australia"
+  },
+  {
+    "id": 84,
+    "name": "Absolut Vodka",
+    "producer": "Absolut",
+    "category": "vodka",
+    "sub_style": "",
+    "notes": "40% ABV; Swedish vodka; village of Åhus"
+  },
+  {
+    "id": 85,
+    "name": "Bombay Sapphire",
+    "producer": "Bombay Sapphire",
+    "category": "gin",
+    "sub_style": "london dry",
+    "notes": "1L; 47% ABV; vapour infused; product of England"
+  },
+  {
+    "id": 86,
+    "name": "Bombay Sapphire East",
+    "producer": "Bombay Sapphire",
+    "category": "gin",
+    "sub_style": "london dry",
+    "notes": "1L; 42% ABV; vapour infused with Thai lemongrass and Vietnamese black peppercorns"
+  },
+  {
+    "id": 87,
+    "name": "Nêga Fulô Cachaça",
+    "producer": "Carvalho",
+    "category": "other",
+    "sub_style": "cachaça",
+    "notes": "750mL; 38% ABV; Brazilian cachaça"
+  },
+  {
+    "id": 88,
+    "name": "Crystal Head Vodka",
+    "producer": "Crystal Head",
+    "category": "vodka",
+    "sub_style": "",
+    "notes": "Skull-shaped bottle; label not visible — identification by bottle shape only"
+  },
+  {
+    "id": 89,
+    "name": "Chivas Regal 18 Gold Signature",
+    "producer": "Chivas Regal",
+    "category": "whisky",
+    "sub_style": "blended scotch",
+    "notes": "750mL; 40% ABV; aged 18 years"
+  },
+  {
+    "id": 90,
+    "name": "Ink Gin",
+    "producer": "Husk Distillers",
+    "category": "gin",
+    "sub_style": "floral",
+    "notes": "700mL; 43% ABV; butterfly pea floral infused; Tumbulgum, Australia"
+  },
+  {
+    "id": 91,
+    "name": "Hennessy XO",
+    "producer": "Hennessy",
+    "category": "brandy",
+    "sub_style": "cognac",
+    "notes": "1L; 40% ABV; The Original X.O"
+  },
+  {
+    "id": 92,
+    "name": "Patrón XO Cafe",
+    "producer": "Patrón",
+    "category": "liqueur",
+    "sub_style": "coffee liqueur",
+    "notes": "750mL; 35% ABV (70 proof); made with Patrón Silver tequila; 100% agave; Mexico"
+  },
+  {
+    "id": 93,
+    "name": "Ukiyo Japanese Rice Vodka",
+    "producer": "Ukiyo",
+    "category": "vodka",
+    "sub_style": "rice",
+    "notes": "700mL; 40% ABV; distilled in Japan"
+  },
+  {
+    "id": 94,
+    "name": "Drambuie",
+    "producer": "Drambuie",
+    "category": "liqueur",
+    "sub_style": "whisky liqueur",
+    "notes": "1L; Isle of Skye liqueur; aged Scotch whisky, heather honey, herbs and spices"
+  },
+  {
+    "id": 95,
+    "name": "Hendrick's Gin",
+    "producer": "Hendrick's",
+    "category": "gin",
+    "sub_style": "contemporary",
+    "notes": "Scotland; bottle identified by shape/embossing, label not visible"
+  },
+  {
+    "id": 96,
+    "name": "Malfy Gin Rosa",
+    "producer": "Malfy",
+    "category": "gin",
+    "sub_style": "flavoured",
+    "notes": "700mL; 41% ABV; pink grapefruit; Italy"
+  },
+  {
+    "id": 97,
+    "name": "Hey June Juniper Gin",
+    "producer": "Hey June",
+    "category": "gin",
+    "sub_style": "contemporary",
+    "notes": "500mL and 200mL bottles present; 45% ABV; boutique Australian"
+  },
+  {
+    "id": 98,
+    "name": "Blueberry Gin",
+    "producer": "Hey June",
+    "category": "gin",
+    "sub_style": "flavoured",
+    "notes": "200mL; 40% ABV; boutique Australian"
+  },
+  {
+    "id": 99,
+    "name": "Cointreau",
+    "producer": "Cointreau",
+    "category": "liqueur",
+    "sub_style": "orange liqueur",
+    "notes": "1L; 40% ABV; Angers, France; both standard and Édition Limitée bottles present"
+  },
+  {
+    "id": 100,
+    "name": "Roku Gin",
+    "producer": "Suntory",
+    "category": "gin",
+    "sub_style": "japanese",
+    "notes": "43% ABV; The Japanese Craft Gin; 6 botanicals; distilled in Japan"
+  },
+  {
+    "id": 101,
+    "name": "Oban 14",
+    "producer": "Oban",
+    "category": "whisky",
+    "sub_style": "highland",
+    "notes": "43% ABV; West Highland single malt; tube only — bottle unopened inside"
+  },
+  {
+    "id": 102,
+    "name": "Teremana Añejo",
+    "producer": "Teremana",
+    "category": "tequila",
+    "sub_style": "añejo",
+    "notes": "40% ABV; small batch; whiskey barrel rested; copper pot stills; Mexico"
+  },
+  {
+    "id": 103,
+    "name": "Teremana Reposado",
+    "producer": "Teremana",
+    "category": "tequila",
+    "sub_style": "reposado",
+    "notes": "40% ABV; small batch; 100% agave; Highlands; Mexico"
+  },
+  {
+    "id": 104,
+    "name": "Balcones Texas Pot Still Bourbon",
+    "producer": "Balcones",
+    "category": "whisky",
+    "sub_style": "bourbon",
+    "notes": "700mL; 46% ABV; Texas straight bourbon"
+  },
+  {
+    "id": 105,
+    "name": "Dolin Dry Vermouth",
+    "producer": "Dolin",
+    "category": "vermouth",
+    "sub_style": "dry",
+    "notes": "Maison fondée en 1821; Chambéry, France"
+  },
+  {
+    "id": 106,
+    "name": "Aberlour 12 Double Cask Matured",
+    "producer": "Aberlour",
+    "category": "whisky",
+    "sub_style": "speyside",
+    "notes": "700mL; 40% ABV; aged 12 years; American oak + sherry casks; tube only — bottle unopened inside"
+  },
+  {
+    "id": 107,
+    "name": "Darroze Les Grands Assemblages 20",
+    "producer": "Darroze",
+    "category": "brandy",
+    "sub_style": "armagnac",
+    "notes": "Bas-Armagnac; 20 years old; France"
+  },
+  {
+    "id": 108,
+    "name": "First Press Espresso Martini Mixer",
+    "producer": "First Press Merchants",
+    "category": "mixer",
+    "sub_style": "coffee concentrate",
+    "notes": "750mL; cold drip coffee concentrate; makes 25 martinis"
+  },
+  {
+    "id": 109,
+    "name": "Jose Cuervo Classic Margarita Mix",
+    "producer": "Jose Cuervo",
+    "category": "mixer",
+    "sub_style": "margarita mix",
+    "notes": "1L; non-alcoholic; crafted with triple sec and natural lime flavouring; Jalisco, Mexico"
+  },
+  {
+    "id": 110,
+    "name": "Carpano Antica Formula",
+    "producer": "Carpano",
+    "category": "vermouth",
+    "sub_style": "sweet",
+    "notes": "Antica Ricetta; Vermouth Pregiato; dal 1786; Giuseppe B. Carpano; Torino, Italia"
+  },
+  {
+    "id": 111,
+    "name": "Tanqueray No. Ten",
+    "producer": "Tanqueray",
+    "category": "gin",
+    "sub_style": "london dry",
+    "notes": "47.3% ABV; small batch; distilled with fresh citrus and botanicals; London, England"
+  }
+];
+
+const COCKTAILS_DATA = [
+  {
+    "id": 1,
+    "name": "Negroni",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "30ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Boulevardier",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "bourbon or rye",
+        "amount": "45ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "Use bourbon or rye.",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Old Pal",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "30ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "30ml",
+        "match_sub_style": "dry"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel",
+    "notes": "Drier, sharper cousin of the Boulevardier.",
+    "tags": [
+      "bitter",
+      "spirit-forward",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Americano",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice, top with soda, stir gently.",
+    "glass": "highball",
+    "garnish": "orange slice",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Negroni Sbagliato",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "30ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "sparkling wine",
+        "amount": "60ml"
+      }
+    ],
+    "method": "Build in rocks glass over ice, top with prosecco, stir gently.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Aperol Spritz",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Aperol",
+        "amount": "60ml",
+        "match_name": "Aperol"
+      },
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in wine glass over ice, stir gently.",
+    "glass": "wine",
+    "garnish": "orange slice",
+    "notes": "3-2-1 ratio prosecco-Aperol-soda.",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif",
+      "brunch"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Campari Spritz",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "60ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in wine glass over ice, stir gently.",
+    "glass": "wine",
+    "garnish": "orange slice",
+    "notes": "Bitterer than Aperol Spritz.",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "built",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Martini",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_sub_style": "orange"
+      }
+    ],
+    "method": "Stir with ice until very cold, strain into chilled coupe or martini glass.",
+    "glass": "coupe",
+    "garnish": "lemon twist or olive",
+    "notes": "Ratio to taste; bitters optional but traditional.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Vodka Martini",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "60ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist or olive",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "stirred"
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Dirty Martini",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin or vodka",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      },
+      {
+        "item": "olive brine",
+        "amount": "10ml"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "olives",
+    "notes": "Requires olive brine.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "savoury"
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Gibson",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "10ml",
+        "match_sub_style": "dry"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "pickled cocktail onion",
+    "notes": "Requires cocktail onion.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "savoury"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Manhattan",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye or bourbon",
+        "amount": "60ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "brandied cherry",
+    "notes": "Rye is traditional; bourbon works.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Rob Roy",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "blended scotch",
+        "amount": "60ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist or cherry",
+    "notes": "Manhattan with scotch.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Old Fashioned",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "bourbon or rye",
+        "amount": "60ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir all with ice in rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Sazerac",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "60ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "absinthe",
+        "amount": "rinse",
+        "match_sub_style": "absinthe"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Peychaud's bitters",
+        "amount": "3 dashes",
+        "match_name": "Peychaud's Aromatic Cocktail Bitters"
+      }
+    ],
+    "method": "Rinse chilled rocks glass with absinthe, discard. Stir remaining ingredients with ice, strain into glass.",
+    "glass": "rocks",
+    "garnish": "lemon peel (expressed, discarded)",
+    "notes": "No ice in final glass.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming",
+      "herbal"
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Vieux Carré",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "25ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "cognac",
+        "amount": "25ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "25ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Bénédictine",
+        "amount": "1 bar spoon"
+      },
+      {
+        "item": "Peychaud's bitters",
+        "amount": "2 dashes",
+        "match_name": "Peychaud's Aromatic Cocktail Bitters"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_name": "Angostura Aromatic Bitters"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "Missing Bénédictine.",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Whisky Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake (no ice) if using egg, then shake with ice. Strain into rocks glass over ice or into coupe.",
+    "glass": "rocks or coupe",
+    "garnish": "Angostura dashes on foam, lemon peel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Daiquiri",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "white rum",
+        "amount": "60ml",
+        "match_sub_style": "white"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake hard with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lime wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Gimlet",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lime cordial",
+        "amount": "20ml",
+        "match_name": "Lime Juice Cordial"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lime wheel",
+    "notes": "Classic 1950s version uses cordial, not fresh juice — works directly with your Bickford's.",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Fresh Gimlet",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lime juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lime wheel",
+    "notes": "Modern preparation.",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Margarita",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "50ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "20ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled rocks or coupe glass. Optional salt rim.",
+    "glass": "rocks or coupe",
+    "garnish": "salt rim, lime wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Tommy's Margarita",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "60ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "15ml",
+        "match_sub_style": "agave syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "lime wheel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy",
+      "refreshing"
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Paloma",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "60ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "grapefruit soda",
+        "amount": "top"
+      },
+      {
+        "item": "salt",
+        "amount": "pinch"
+      }
+    ],
+    "method": "Build in highball over ice, top with grapefruit soda.",
+    "glass": "highball",
+    "garnish": "grapefruit wedge",
+    "notes": "Grapefruit soda not in inventory but assumed available.",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built",
+      "light"
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Tequila Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "60ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "15ml",
+        "match_sub_style": "agave syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake if using egg, then shake with ice. Strain into coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Mojito",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "white rum",
+        "amount": "60ml",
+        "match_sub_style": "white"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "mint leaves",
+        "amount": "8-10"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Gently muddle mint in shaker. Add rum, lime, syrup, ice. Shake briefly, strain into highball over ice. Top with soda.",
+    "glass": "highball",
+    "garnish": "mint sprig",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "light",
+      "herbal"
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Cuba Libre",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "50ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "lime juice",
+        "amount": "10ml"
+      },
+      {
+        "item": "cola",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "built",
+      "refreshing",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Dark 'n' Stormy",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dark/spiced rum",
+        "amount": "60ml",
+        "match_sub_style": "spiced"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "ginger beer",
+        "amount": "top"
+      }
+    ],
+    "method": "Build rum and lime in highball over ice. Top with ginger beer, stir.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "Traditionally Gosling's; Kraken works well.",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built",
+      "warming"
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Mai Tai",
+    "category": "tiki",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "30ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "overproof rum",
+        "amount": "30ml",
+        "match_sub_style": "overproof"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "15ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lime juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "orgeat",
+        "amount": "15ml"
+      }
+    ],
+    "method": "Shake with crushed ice, dump into rocks glass.",
+    "glass": "rocks",
+    "garnish": "mint sprig, lime shell",
+    "notes": "Missing orgeat. Trader Vic original calls for aged Jamaican + Martinique; your Santiago + Kraken/Captain Morgan OP is a fair stand-in.",
+    "tags": [
+      "tropical",
+      "shaken",
+      "citrusy",
+      "tiki"
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Piña Colada",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "white rum",
+        "amount": "60ml",
+        "match_sub_style": "white"
+      },
+      {
+        "item": "coconut cream",
+        "amount": "30ml"
+      },
+      {
+        "item": "pineapple juice",
+        "amount": "90ml"
+      }
+    ],
+    "method": "Blend with crushed ice, or shake hard and strain into hurricane glass.",
+    "glass": "hurricane",
+    "garnish": "pineapple wedge",
+    "notes": "Needs coconut cream and pineapple juice.",
+    "tags": [
+      "tropical",
+      "sweet",
+      "shaken"
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Jungle Bird",
+    "category": "tiki",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "45ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "Campari",
+        "amount": "20ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "pineapple juice",
+        "amount": "45ml"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "pineapple leaf",
+    "notes": "Needs pineapple juice.",
+    "tags": [
+      "tropical",
+      "bitter",
+      "shaken",
+      "tiki"
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Caipirinha",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cachaça",
+        "amount": "60ml",
+        "match_sub_style": "cachaça"
+      },
+      {
+        "item": "lime",
+        "amount": "half, cut into wedges"
+      },
+      {
+        "item": "white sugar",
+        "amount": "2 tsp"
+      }
+    ],
+    "method": "Muddle lime and sugar in rocks glass. Add cachaça, fill with crushed ice, stir.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built"
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Moscow Mule",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "60ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "ginger beer",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in copper mug or highball over ice.",
+    "glass": "copper mug or highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "built"
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Vodka Soda",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "45ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "built"
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Gin & Tonic",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "50ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "tonic water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball or copa glass over ice.",
+    "glass": "highball or copa",
+    "garnish": "lime wedge or lemon peel",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "light",
+      "built"
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Tom Collins",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "50ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Shake gin, lemon, syrup with ice. Strain into collins glass over ice, top with soda.",
+    "glass": "collins",
+    "garnish": "lemon wheel",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "citrusy",
+      "light"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "French 75",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "30ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "champagne or prosecco",
+        "amount": "60ml"
+      }
+    ],
+    "method": "Shake gin, lemon, syrup with ice. Strain into flute, top with sparkling wine.",
+    "glass": "flute",
+    "garnish": "lemon twist",
+    "notes": "",
+    "tags": [
+      "light",
+      "citrusy",
+      "refreshing",
+      "brunch"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Bee's Knees",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "60ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "honey syrup",
+        "amount": "20ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Honey syrup = honey diluted 2:1 with hot water.",
+    "tags": [
+      "sour",
+      "citrusy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Last Word",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "22ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "Green Chartreuse",
+        "amount": "22ml",
+        "match_name": "Green Chartreuse"
+      },
+      {
+        "item": "maraschino liqueur",
+        "amount": "22ml"
+      },
+      {
+        "item": "lime juice",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "",
+    "notes": "Needs maraschino liqueur.",
+    "tags": [
+      "herbal",
+      "sour",
+      "shaken"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Final Ward",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "22ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Green Chartreuse",
+        "amount": "22ml",
+        "match_name": "Green Chartreuse"
+      },
+      {
+        "item": "maraschino liqueur",
+        "amount": "22ml"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Needs maraschino liqueur. Last Word variant with rye and lemon.",
+    "tags": [
+      "herbal",
+      "sour",
+      "shaken"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Paper Plane",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "22ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "Aperol",
+        "amount": "22ml",
+        "match_name": "Aperol"
+      },
+      {
+        "item": "Amaro Nonino",
+        "amount": "22ml"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "",
+    "notes": "Missing Amaro Nonino; Montenegro is a passable substitute.",
+    "tags": [
+      "bitter",
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Sidecar",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cognac",
+        "amount": "50ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "20ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "sugar rim (optional), lemon twist",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Brandy Alexander",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cognac",
+        "amount": "30ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "brown crème de cacao",
+        "amount": "30ml",
+        "match_name": "Vok Brown Crème de Cacao"
+      },
+      {
+        "item": "cream",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Shake with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "grated nutmeg",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "after-dinner",
+      "shaken"
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Espresso Martini",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "20ml",
+        "match_name": "Kahlúa Coffee Liqueur"
+      },
+      {
+        "item": "espresso or coffee concentrate",
+        "amount": "30ml",
+        "match_name": "First Press Espresso Martini Mixer"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake hard with ice, double strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "3 coffee beans",
+    "notes": "Your First Press concentrate is purpose-made for this.",
+    "tags": [
+      "after-dinner",
+      "shaken",
+      "sweet"
+    ]
+  },
+  {
+    "id": 44,
+    "name": "White Russian",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "20ml",
+        "match_name": "Kahlúa Coffee Liqueur"
+      },
+      {
+        "item": "cream",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Build vodka and Kahlúa in rocks glass over ice, float cream on top.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "after-dinner",
+      "built"
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Black Russian",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "20ml",
+        "match_name": "Kahlúa Coffee Liqueur"
+      }
+    ],
+    "method": "Build in rocks glass over ice, stir.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "after-dinner",
+      "built"
+    ]
+  },
+  {
+    "id": 46,
+    "name": "B-52",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "coffee liqueur",
+        "amount": "15ml",
+        "match_name": "Kahlúa Coffee Liqueur"
+      },
+      {
+        "item": "Baileys",
+        "amount": "15ml",
+        "match_name": "Baileys Original Irish Cream"
+      },
+      {
+        "item": "Grand Marnier",
+        "amount": "15ml"
+      }
+    ],
+    "method": "Layer carefully in shot glass: Kahlúa, then Baileys, then Grand Marnier.",
+    "glass": "shot",
+    "garnish": "",
+    "notes": "Substitute Cointreau or Triple Sec for Grand Marnier — close enough.",
+    "tags": [
+      "sweet",
+      "shot"
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Godfather",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "scotch",
+        "amount": "45ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "amaretto",
+        "amount": "20ml",
+        "match_name": "Disaronno Originale"
+      }
+    ],
+    "method": "Build in rocks glass over ice, stir.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "spirit-forward",
+      "built",
+      "after-dinner"
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Amaretto Sour",
+    "category": "sour",
+    "ingredients": [
+      {
+        "item": "amaretto",
+        "amount": "45ml",
+        "match_name": "Disaronno Originale"
+      },
+      {
+        "item": "bourbon",
+        "amount": "20ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake if using egg, then shake with ice. Strain into rocks glass over ice.",
+    "glass": "rocks",
+    "garnish": "lemon peel, brandied cherry",
+    "notes": "Bourbon-spiked version (Jeffrey Morgenthaler).",
+    "tags": [
+      "sour",
+      "shaken",
+      "sweet"
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Rusty Nail",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "scotch",
+        "amount": "45ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "Drambuie",
+        "amount": "20ml",
+        "match_name": "Drambuie"
+      }
+    ],
+    "method": "Build in rocks glass over ice, stir.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "built",
+      "warming",
+      "after-dinner"
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Penicillin",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "blended scotch",
+        "amount": "60ml",
+        "match_sub_style": "blended scotch"
+      },
+      {
+        "item": "Islay scotch",
+        "amount": "7ml float",
+        "match_sub_style": "islay"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "honey-ginger syrup",
+        "amount": "20ml"
+      }
+    ],
+    "method": "Shake scotch, lemon, honey-ginger with ice. Strain into rocks glass over ice. Float Islay on top.",
+    "glass": "rocks",
+    "garnish": "candied ginger (optional)",
+    "notes": "Honey-ginger syrup: equal parts honey, fresh ginger juice, water.",
+    "tags": [
+      "smoky",
+      "warming",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Rob Roy Smoky",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Islay scotch",
+        "amount": "60ml",
+        "match_sub_style": "islay"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "30ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Rob Roy with peated whisky.",
+    "tags": [
+      "smoky",
+      "stirred",
+      "spirit-forward"
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Smoky Old Fashioned",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Islay scotch",
+        "amount": "60ml",
+        "match_sub_style": "islay"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir all with ice in rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "smoky",
+      "spirit-forward",
+      "stirred"
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Hot Toddy",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "scotch or bourbon",
+        "amount": "45ml",
+        "match_category": "whisky"
+      },
+      {
+        "item": "honey",
+        "amount": "1 tsp"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "hot water",
+        "amount": "120ml"
+      }
+    ],
+    "method": "Combine in mug, stir until honey dissolves.",
+    "glass": "mug",
+    "garnish": "lemon wheel, clove-studded (optional)",
+    "notes": "",
+    "tags": [
+      "warming",
+      "built",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Irish Coffee",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Irish whiskey",
+        "amount": "45ml",
+        "match_sub_style": "irish"
+      },
+      {
+        "item": "hot coffee",
+        "amount": "120ml"
+      },
+      {
+        "item": "brown sugar",
+        "amount": "1 tsp"
+      },
+      {
+        "item": "lightly whipped cream",
+        "amount": "float"
+      }
+    ],
+    "method": "Stir whisky, coffee, sugar in heated glass. Float cream on top over a spoon.",
+    "glass": "Irish coffee glass",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "warming",
+      "built",
+      "after-dinner"
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Pimm's Cup",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Pimm's No. 1",
+        "amount": "50ml",
+        "match_name": "Pimm's No. 1 Cup"
+      },
+      {
+        "item": "lemonade or ginger ale",
+        "amount": "150ml"
+      }
+    ],
+    "method": "Build in highball over ice with cucumber, orange, mint, strawberry.",
+    "glass": "highball",
+    "garnish": "cucumber, mint, orange, strawberry",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "light",
+      "built",
+      "brunch"
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Cosmopolitan",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "citrus vodka",
+        "amount": "45ml",
+        "match_sub_style": "flavoured"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "15ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "cranberry juice",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel (flamed, optional)",
+    "notes": "Needs cranberry juice. Your Smirnoff Twisted Citrus fits the spec.",
+    "tags": [
+      "sour",
+      "citrusy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Lemon Drop",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "citrus vodka or vodka",
+        "amount": "50ml",
+        "match_category": "vodka"
+      },
+      {
+        "item": "Cointreau",
+        "amount": "15ml",
+        "match_name": "Cointreau"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      }
+    ],
+    "method": "Shake with ice, strain into sugar-rimmed coupe.",
+    "glass": "coupe",
+    "garnish": "sugar rim, lemon twist",
+    "notes": "",
+    "tags": [
+      "sour",
+      "citrusy",
+      "shaken",
+      "sweet"
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Sherry Cobbler",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dry sherry-style fortified wine",
+        "amount": "90ml",
+        "match_name": "McWilliam's Royal Reserve Dry"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "orange slices",
+        "amount": "2"
+      }
+    ],
+    "method": "Muddle orange and syrup in shaker. Add sherry and ice, shake. Strain into wine glass packed with crushed ice.",
+    "glass": "wine",
+    "garnish": "berries, orange wheel, mint",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "shaken",
+      "brunch"
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Adonis",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dry sherry-style fortified wine",
+        "amount": "45ml",
+        "match_name": "McWilliam's Royal Reserve Dry"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "45ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "orange"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "light",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Bamboo",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "dry sherry-style fortified wine",
+        "amount": "45ml",
+        "match_name": "McWilliam's Royal Reserve Dry"
+      },
+      {
+        "item": "dry vermouth",
+        "amount": "45ml",
+        "match_sub_style": "dry"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_sub_style": "orange"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "Dry, low-ABV aperitif.",
+    "tags": [
+      "light",
+      "stirred",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Hanky Panky",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "gin",
+        "amount": "45ml",
+        "match_category": "gin"
+      },
+      {
+        "item": "sweet vermouth",
+        "amount": "45ml",
+        "match_sub_style": "sweet"
+      },
+      {
+        "item": "Fernet-Branca",
+        "amount": "7ml",
+        "match_name": "Fernet-Branca"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "stirred",
+      "herbal",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Toronto",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "60ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Fernet-Branca",
+        "amount": "7ml",
+        "match_name": "Fernet-Branca"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "5ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over fresh ice (or coupe).",
+    "glass": "rocks or coupe",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "stirred",
+      "spirit-forward",
+      "warming"
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Black Manhattan",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "rye whisky",
+        "amount": "60ml",
+        "match_sub_style": "rye"
+      },
+      {
+        "item": "Amaro Averna",
+        "amount": "30ml"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_sub_style": "aromatic"
+      },
+      {
+        "item": "orange bitters",
+        "amount": "1 dash",
+        "match_sub_style": "orange"
+      }
+    ],
+    "method": "Stir with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "brandied cherry",
+    "notes": "Missing Averna; Montenegro is a fair substitute (lighter, less bitter).",
+    "tags": [
+      "bitter",
+      "stirred",
+      "spirit-forward"
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Montenegro Sour",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Amaro Montenegro",
+        "amount": "60ml",
+        "match_name": "Amaro Montenegro"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "25ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "egg white",
+        "amount": "1 (optional)"
+      }
+    ],
+    "method": "Dry shake if using egg, then shake with ice. Strain into coupe.",
+    "glass": "coupe",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "sour",
+      "shaken",
+      "herbal"
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Sloe Gin Fizz",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "sloe gin",
+        "amount": "60ml",
+        "match_name": "Brookie's Byron Slow Gin"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Shake sloe gin, lemon, syrup with ice. Strain into highball over ice, top with soda.",
+    "glass": "highball",
+    "garnish": "lemon wheel",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 66,
+    "name": "Mint Julep",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "mint leaves",
+        "amount": "8-10"
+      }
+    ],
+    "method": "Gently muddle mint with syrup in julep cup. Add bourbon, fill with crushed ice, stir to chill until cup frosts.",
+    "glass": "julep cup or rocks",
+    "garnish": "mint bouquet",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "herbal",
+      "spirit-forward"
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Tequila Old Fashioned",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "añejo tequila",
+        "amount": "60ml",
+        "match_sub_style": "añejo"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "5ml",
+        "match_sub_style": "agave syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir all with ice in rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "orange peel",
+    "notes": "",
+    "tags": [
+      "spirit-forward",
+      "stirred",
+      "warming"
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Oaxaca Old Fashioned",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "reposado tequila",
+        "amount": "45ml",
+        "match_sub_style": "reposado"
+      },
+      {
+        "item": "mezcal",
+        "amount": "15ml"
+      },
+      {
+        "item": "agave syrup",
+        "amount": "5ml",
+        "match_sub_style": "agave syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "2 dashes",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Stir with ice, strain into rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "flamed orange peel",
+    "notes": "Missing mezcal — works as a tequila-only OF; add Laphroaig rinse for a similar smoky note.",
+    "tags": [
+      "smoky",
+      "spirit-forward",
+      "stirred"
+    ]
+  },
+  {
+    "id": 69,
+    "name": "Japanese Highball",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "Japanese whisky",
+        "amount": "45ml",
+        "match_sub_style": "japanese"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice (ideally large cubes), stir once briefly.",
+    "glass": "highball",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "built"
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Bourbon Smash",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "15ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "mint leaves",
+        "amount": "6-8"
+      }
+    ],
+    "method": "Muddle mint and syrup in shaker. Add bourbon, lemon, ice; shake. Strain into rocks glass over crushed ice.",
+    "glass": "rocks",
+    "garnish": "mint sprig",
+    "notes": "",
+    "tags": [
+      "refreshing",
+      "herbal",
+      "citrusy",
+      "shaken"
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Champs-Élysées",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "cognac",
+        "amount": "60ml",
+        "match_sub_style": "cognac"
+      },
+      {
+        "item": "Green Chartreuse",
+        "amount": "15ml",
+        "match_name": "Green Chartreuse"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "20ml"
+      },
+      {
+        "item": "sugar syrup",
+        "amount": "10ml",
+        "match_sub_style": "simple syrup"
+      },
+      {
+        "item": "Angostura bitters",
+        "amount": "1 dash",
+        "match_sub_style": "aromatic"
+      }
+    ],
+    "method": "Shake with ice, strain into chilled coupe.",
+    "glass": "coupe",
+    "garnish": "lemon twist",
+    "notes": "",
+    "tags": [
+      "herbal",
+      "sour",
+      "shaken"
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Bicicletta",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "45ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "dry white wine",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in wine glass over ice, top with soda.",
+    "glass": "wine",
+    "garnish": "lemon slice",
+    "notes": "Needs white wine.",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Garibaldi",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Campari",
+        "amount": "45ml",
+        "match_name": "Campari"
+      },
+      {
+        "item": "orange juice",
+        "amount": "120ml (fluffy)"
+      }
+    ],
+    "method": "Pour Campari into highball over ice. Top with vigorously aerated (blended or whipped) fresh OJ.",
+    "glass": "highball",
+    "garnish": "orange slice",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "brunch",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Pampelle Spritz",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "Pampelle",
+        "amount": "60ml",
+        "match_name": "Pampelle Ruby Aperitif"
+      },
+      {
+        "item": "prosecco",
+        "amount": "90ml"
+      },
+      {
+        "item": "soda water",
+        "amount": "splash"
+      }
+    ],
+    "method": "Build in wine glass over ice, stir gently.",
+    "glass": "wine",
+    "garnish": "pink grapefruit slice",
+    "notes": "",
+    "tags": [
+      "bitter",
+      "light",
+      "refreshing",
+      "aperitif"
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Gold Rush",
+    "category": "modern_classic",
+    "ingredients": [
+      {
+        "item": "bourbon",
+        "amount": "60ml",
+        "match_sub_style": "bourbon"
+      },
+      {
+        "item": "lemon juice",
+        "amount": "22ml"
+      },
+      {
+        "item": "honey syrup",
+        "amount": "22ml"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over a large cube.",
+    "glass": "rocks",
+    "garnish": "lemon peel",
+    "notes": "",
+    "tags": [
+      "sour",
+      "shaken",
+      "citrusy"
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Air Mail",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "aged rum",
+        "amount": "30ml",
+        "match_sub_style": "aged"
+      },
+      {
+        "item": "lime juice",
+        "amount": "15ml"
+      },
+      {
+        "item": "honey syrup",
+        "amount": "15ml"
+      },
+      {
+        "item": "champagne or prosecco",
+        "amount": "60ml"
+      }
+    ],
+    "method": "Shake rum, lime, honey with ice. Strain into flute, top with sparkling wine.",
+    "glass": "flute",
+    "garnish": "lime peel",
+    "notes": "",
+    "tags": [
+      "light",
+      "citrusy",
+      "brunch"
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Tequila & Tonic",
+    "category": "highball",
+    "ingredients": [
+      {
+        "item": "blanco tequila",
+        "amount": "50ml",
+        "match_sub_style": "blanco"
+      },
+      {
+        "item": "tonic water",
+        "amount": "top"
+      }
+    ],
+    "method": "Build in highball over ice.",
+    "glass": "highball",
+    "garnish": "lime wedge",
+    "notes": "",
+    "tags": [
+      "light",
+      "refreshing",
+      "built"
+    ]
+  },
+  {
+    "id": 78,
+    "name": "Toasted Almond",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "amaretto",
+        "amount": "30ml",
+        "match_name": "Disaronno Originale"
+      },
+      {
+        "item": "coffee liqueur",
+        "amount": "30ml",
+        "match_name": "Kahlúa Coffee Liqueur"
+      },
+      {
+        "item": "cream",
+        "amount": "30ml"
+      }
+    ],
+    "method": "Shake with ice, strain into rocks glass over fresh ice.",
+    "glass": "rocks",
+    "garnish": "",
+    "notes": "",
+    "tags": [
+      "sweet",
+      "after-dinner",
+      "shaken"
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Kir Royale",
+    "category": "classic",
+    "ingredients": [
+      {
+        "item": "Chambord or crème de cassis",
+        "amount": "10ml",
+        "match_name": "Chambord"
+      },
+      {
+        "item": "champagne or prosecco",
+        "amount": "120ml"
+      }
+    ],
+    "method": "Pour liqueur into flute, top with sparkling wine.",
+    "glass": "flute",
+    "garnish": "",
+    "notes": "Cassis is traditional; Chambord works.",
+    "tags": [
+      "light",
+      "sweet",
+      "built",
+      "aperitif"
+    ]
+  }
+];
+
+function load() {
+  inventory = INVENTORY_DATA;
+  cocktails = COCKTAILS_DATA;
+  try {
+    bottleChoices = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+  } catch (e) { bottleChoices = {}; }
+  init();
+}
+
+function saveChoices() {
+  localStorage.setItem(LS_KEY, JSON.stringify(bottleChoices));
+}
+
+// ============================================================
+// Match logic
+// ============================================================
+// Returns array of bottle objects that satisfy the ingredient.
+function bottlesFor(ing) {
+  if (!ing.match_name && !ing.match_category && !ing.match_sub_style) {
+    return null; // means "assumed available" — not an inventory ingredient
+  }
+  return inventory.filter(b => {
+    if (ing.match_name && b.name === ing.match_name) return true;
+    if (ing.match_category && b.category === ing.match_category) return true;
+    if (ing.match_sub_style && b.sub_style === ing.match_sub_style) return true;
+    return false;
+  });
+}
+
+// Annotate a cocktail with per-ingredient status + overall makeability.
+function annotate(cocktail) {
+  const ings = cocktail.ingredients.map((ing, idx) => {
+    const matches = bottlesFor(ing);
+    if (matches === null) {
+      return { ...ing, idx, status: "assumed", matches: [] };
+    }
+    if (matches.length === 0) {
+      return { ...ing, idx, status: "missing", matches: [] };
+    }
+    return { ...ing, idx, status: "matched", matches };
+  });
+  const missingCount = ings.filter(i => i.status === "missing").length;
+  let state;
+  if (missingCount === 0) state = "makeable";
+  else if (missingCount === 1) state = "oneaway";
+  else state = "unmakeable";
+  return { ...cocktail, annotated: ings, missingCount, state };
+}
+
+function chosenBottleFor(cocktailId, ing) {
+  if (ing.matches.length === 0) return null;
+  const key = cocktailId + ":" + ing.idx;
+  const chosenId = bottleChoices[key];
+  if (chosenId) {
+    const b = ing.matches.find(m => m.id === chosenId);
+    if (b) return b;
+  }
+  return ing.matches[0];
+}
+
+// ============================================================
+// Init UI
+// ============================================================
+function init() {
+  // Build category filters for bar
+  const cats = [...new Set(inventory.map(b => b.category))].sort();
+  const catCounts = {};
+  inventory.forEach(b => { catCounts[b.category] = (catCounts[b.category] || 0) + 1; });
+
+  const catContainer = document.getElementById("bar-cat-filters");
+  const allBtn = document.createElement("button");
+  allBtn.className = "pill active";
+  allBtn.textContent = `all (${inventory.length})`;
+  allBtn.onclick = () => setBarCat(null);
+  catContainer.appendChild(allBtn);
+  cats.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "pill";
+    btn.textContent = `${c} (${catCounts[c]})`;
+    btn.dataset.cat = c;
+    btn.onclick = () => setBarCat(c);
+    catContainer.appendChild(btn);
+  });
+
+  // Build tag filters
+  const allTags = new Set();
+  cocktails.forEach(c => (c.tags || []).forEach(t => allTags.add(t)));
+  const tagContainer = document.getElementById("tag-filters");
+  [...allTags].sort().forEach(t => {
+    const btn = document.createElement("button");
+    btn.className = "pill";
+    btn.textContent = t;
+    btn.onclick = () => {
+      if (tagFilters.has(t)) tagFilters.delete(t);
+      else tagFilters.add(t);
+      btn.classList.toggle("active");
+      renderCocktails();
+    };
+    tagContainer.appendChild(btn);
+  });
+
+  // Wire up search/sort/mode
+  document.getElementById("bar-search").addEventListener("input", e => {
+    barSearch = e.target.value.toLowerCase();
+    renderBar();
+  });
+  document.getElementById("cocktail-search").addEventListener("input", e => {
+    cocktailSearch = e.target.value.toLowerCase();
+    renderCocktails();
+  });
+  document.getElementById("cocktail-sort").addEventListener("change", e => {
+    cocktailSort = e.target.value;
+    renderCocktails();
+  });
+  document.querySelectorAll(".pill[data-mode]").forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll(".pill[data-mode]").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      cocktailMode = b.dataset.mode;
+      renderCocktails();
+    };
+  });
+
+  // View switch
+  document.getElementById("view-bar").onclick = () => setView("bar");
+  document.getElementById("view-cocktails").onclick = () => setView("cocktails");
+
+  // Modal close
+  document.getElementById("modal").onclick = e => {
+    if (e.target.id === "modal") closeModal();
+  };
+
+  renderBar();
+}
+
+function setView(v) {
+  view = v;
+  document.getElementById("view-bar").classList.toggle("active", v === "bar");
+  document.getElementById("view-cocktails").classList.toggle("active", v === "cocktails");
+  document.getElementById("bar-view").classList.toggle("hidden", v !== "bar");
+  document.getElementById("cocktails-view").classList.toggle("hidden", v !== "cocktails");
+  document.getElementById("bar-controls").classList.toggle("hidden", v !== "bar");
+  document.getElementById("cocktail-controls").classList.toggle("hidden", v !== "cocktails");
+  if (v === "bar") renderBar();
+  else renderCocktails();
+}
+
+function setBarCat(cat) {
+  barCatFilter = cat;
+  document.querySelectorAll("#bar-cat-filters .pill").forEach(p => {
+    const matches = cat === null
+      ? p.textContent.startsWith("all")
+      : p.dataset.cat === cat;
+    p.classList.toggle("active", matches);
+  });
+  renderBar();
+}
+
+// ============================================================
+// Render: Bar
+// ============================================================
+function renderBar() {
+  const list = document.getElementById("bar-list");
+  const q = barSearch;
+  const filtered = inventory.filter(b => {
+    if (barCatFilter && b.category !== barCatFilter) return false;
+    if (!q) return true;
+    return (
+      b.name.toLowerCase().includes(q) ||
+      (b.producer || "").toLowerCase().includes(q) ||
+      (b.notes || "").toLowerCase().includes(q) ||
+      (b.sub_style || "").toLowerCase().includes(q)
+    );
+  });
+
+  list.innerHTML = "";
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">no bottles match</div>';
+  } else {
+    const frag = document.createDocumentFragment();
+    filtered.forEach(b => {
+      const row = document.createElement("div");
+      row.className = "bar-row";
+      row.innerHTML = `
+        <div class="id">#${b.id}</div>
+        <div class="name">${escapeHtml(b.name)}</div>
+        <div class="producer">${escapeHtml(b.producer || "—")}</div>
+        <div><span class="cat-pill">${escapeHtml(b.category)}</span></div>
+        <div class="substyle">${escapeHtml(b.sub_style || "—")}</div>
+        <div class="notes">${escapeHtml(b.notes || "")}</div>
+      `;
+      frag.appendChild(row);
+    });
+    list.appendChild(frag);
+  }
+
+  // Stats
+  const total = inventory.length;
+  document.getElementById("stats").innerHTML =
+    `<b>${filtered.length}</b> / ${total} bottles`;
+}
+
+// ============================================================
+// Render: Cocktails
+// ============================================================
+function renderCocktails() {
+  const list = document.getElementById("cocktails-list");
+  list.innerHTML = "";
+
+  const annotated = cocktails.map(annotate);
+
+  // Filter by mode
+  let filtered = annotated.filter(c => {
+    if (cocktailMode === "makeable") return c.state === "makeable";
+    if (cocktailMode === "oneaway") return c.state === "makeable" || c.state === "oneaway";
+    return true;
+  });
+
+  // Search
+  if (cocktailSearch) {
+    filtered = filtered.filter(c => c.name.toLowerCase().includes(cocktailSearch));
+  }
+
+  // Tags (any-match)
+  if (tagFilters.size > 0) {
+    filtered = filtered.filter(c => (c.tags || []).some(t => tagFilters.has(t)));
+  }
+
+  // Sort
+  filtered.sort((a, b) => {
+    // State priority: makeable > oneaway > unmakeable (always)
+    const stateOrder = { makeable: 0, oneaway: 1, unmakeable: 2 };
+    if (stateOrder[a.state] !== stateOrder[b.state]) {
+      return stateOrder[a.state] - stateOrder[b.state];
+    }
+    if (cocktailSort === "name") return a.name.localeCompare(b.name);
+    if (cocktailSort === "category") return (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name);
+    if (cocktailSort === "ingredients") return a.ingredients.length - b.ingredients.length || a.name.localeCompare(b.name);
+    return 0;
+  });
+
+  // Stats
+  const makeableCount = annotated.filter(c => c.state === "makeable").length;
+  const oneawayCount = annotated.filter(c => c.state === "oneaway").length;
+  document.getElementById("stats").innerHTML =
+    `<b>${makeableCount}</b> makeable · <b>${oneawayCount}</b> one away · ${cocktails.length} total · showing <b>${filtered.length}</b>`;
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">no cocktails match</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  filtered.forEach(c => frag.appendChild(renderCocktail(c)));
+  list.appendChild(frag);
+}
+
+function renderCocktail(c) {
+  const el = document.createElement("div");
+  el.className = "cocktail " + c.state;
+
+  const badge = c.state === "makeable"
+    ? '<span class="badge makeable">ready</span>'
+    : c.state === "oneaway"
+      ? '<span class="badge oneaway">one away</span>'
+      : `<span class="badge unmakeable">${c.missingCount} missing</span>`;
+
+  const ingredientsHtml = c.annotated.map(ing => {
+    const amt = escapeHtml(ing.amount || "");
+    const label = escapeHtml(ing.item || "");
+
+    if (ing.status === "assumed") {
+      return `<li>
+        <span class="amt">${amt}</span>
+        <span><span class="ing">${label}</span> <span class="assumed">(assumed available)</span></span>
+      </li>`;
+    }
+    if (ing.status === "missing") {
+      const want = ing.match_name || ing.match_sub_style || ing.match_category;
+      return `<li>
+        <span class="amt">${amt}</span>
+        <span><span class="ing">${label}</span> <span class="missing">${escapeHtml(want)}</span></span>
+      </li>`;
+    }
+    // matched
+    const chosen = chosenBottleFor(c.id, ing);
+    const optsLink = ing.matches.length > 1
+      ? ` <button class="options-link" data-cid="${c.id}" data-iidx="${ing.idx}">${ing.matches.length} options</button>`
+      : "";
+    return `<li>
+      <span class="amt">${amt}</span>
+      <span><span class="ing">${label}</span> <span class="bottle">${escapeHtml(chosen.name)}</span>${optsLink}</span>
+    </li>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="title-row">
+      <h3>${escapeHtml(c.name)}</h3>
+      ${badge}
+    </div>
+    <div class="category">${escapeHtml(c.category || "")}</div>
+    <ul class="ingredients">${ingredientsHtml}</ul>
+    <div class="method">${escapeHtml(c.method || "")}</div>
+    <div class="meta">
+      ${c.glass ? `<span><b>glass</b> ${escapeHtml(c.glass)}</span>` : ""}
+      ${c.garnish ? `<span><b>garnish</b> ${escapeHtml(c.garnish)}</span>` : ""}
+    </div>
+    ${c.notes ? `<div class="note">${escapeHtml(c.notes)}</div>` : ""}
+    <div class="tags">${(c.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+  `;
+
+  // Wire up bottle picker links
+  el.querySelectorAll(".options-link").forEach(btn => {
+    btn.onclick = () => openModal(parseInt(btn.dataset.cid), parseInt(btn.dataset.iidx));
+  });
+
+  return el;
+}
+
+// ============================================================
+// Bottle picker modal
+// ============================================================
+function openModal(cocktailId, ingIdx) {
+  const c = cocktails.find(x => x.id === cocktailId);
+  if (!c) return;
+  const ing = c.ingredients[ingIdx];
+  const matches = bottlesFor(ing);
+  if (!matches || matches.length <= 1) return;
+
+  const key = cocktailId + ":" + ingIdx;
+  const currentId = bottleChoices[key] || matches[0].id;
+
+  document.getElementById("modal-title").textContent = `Pick a bottle for ${c.name}`;
+  document.getElementById("modal-sub").textContent = `Ingredient: ${ing.item}`;
+
+  const optsContainer = document.getElementById("modal-options");
+  optsContainer.innerHTML = "";
+  matches.forEach(b => {
+    const btn = document.createElement("button");
+    btn.className = "modal-option" + (b.id === currentId ? " selected" : "");
+    btn.innerHTML = `
+      <div>${escapeHtml(b.name)}</div>
+      <div class="sub2">${escapeHtml(b.producer || "")} · ${escapeHtml(b.sub_style || b.category)}${b.notes ? " · " + escapeHtml(b.notes) : ""}</div>
+    `;
+    btn.onclick = () => {
+      bottleChoices[key] = b.id;
+      saveChoices();
+      closeModal();
+      renderCocktails();
+    };
+    optsContainer.appendChild(btn);
+  });
+
+  document.getElementById("modal").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("open");
+}
+
+// ============================================================
+// Util
+// ============================================================
+function escapeHtml(s) {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+// ============================================================
+// Go
+// ============================================================
+load();
+</script>
+
+</body>
+</html>
