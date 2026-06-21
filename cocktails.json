@@ -466,7 +466,7 @@
   },
   {
     "id": 16,
-    "name": "Vieux Carr\u00e9",
+    "name": "Vieux Carré",
     "category": "classic",
     "ingredients": [
       {
@@ -485,7 +485,7 @@
         "match_sub_style": "sweet"
       },
       {
-        "item": "B\u00e9n\u00e9dictine",
+        "item": "Bénédictine",
         "amount": "1 bar spoon"
       },
       {
@@ -502,7 +502,7 @@
     "method": "Stir with ice, strain into rocks glass over fresh ice.",
     "glass": "rocks",
     "garnish": "lemon peel",
-    "notes": "Missing B\u00e9n\u00e9dictine.",
+    "notes": "Missing Bénédictine.",
     "tags": [
       "spirit-forward",
       "stirred",
@@ -593,7 +593,7 @@
     "method": "Shake with ice, strain into chilled coupe.",
     "glass": "coupe",
     "garnish": "lime wheel",
-    "notes": "Classic 1950s version uses cordial, not fresh juice \u2014 works directly with your Bickford's.",
+    "notes": "Classic 1950s version uses cordial, not fresh juice — works directly with your Bickford's.",
     "tags": [
       "sour",
       "shaken",
@@ -902,7 +902,7 @@
   },
   {
     "id": 29,
-    "name": "Pi\u00f1a Colada",
+    "name": "Piña Colada",
     "category": "classic",
     "ingredients": [
       {
@@ -975,9 +975,9 @@
     "category": "classic",
     "ingredients": [
       {
-        "item": "cacha\u00e7a",
+        "item": "cachaça",
         "amount": "60ml",
-        "match_sub_style": "cacha\u00e7a"
+        "match_sub_style": "cachaça"
       },
       {
         "item": "lime",
@@ -988,7 +988,7 @@
         "amount": "2 tsp"
       }
     ],
-    "method": "Muddle lime and sugar in rocks glass. Add cacha\u00e7a, fill with crushed ice, stir.",
+    "method": "Muddle lime and sugar in rocks glass. Add cachaça, fill with crushed ice, stir.",
     "glass": "rocks",
     "garnish": "",
     "notes": "",
@@ -1319,9 +1319,9 @@
         "match_sub_style": "cognac"
       },
       {
-        "item": "brown cr\u00e8me de cacao",
+        "item": "brown crème de cacao",
         "amount": "30ml",
-        "match_name": "Vok Brown Cr\u00e8me de Cacao"
+        "match_name": "Vok Brown Crème de Cacao"
       },
       {
         "item": "cream",
@@ -1351,7 +1351,7 @@
       {
         "item": "coffee liqueur",
         "amount": "20ml",
-        "match_name": "Kahl\u00faa Coffee Liqueur"
+        "match_name": "Kahlúa Coffee Liqueur"
       },
       {
         "item": "espresso or coffee concentrate",
@@ -1387,14 +1387,14 @@
       {
         "item": "coffee liqueur",
         "amount": "20ml",
-        "match_name": "Kahl\u00faa Coffee Liqueur"
+        "match_name": "Kahlúa Coffee Liqueur"
       },
       {
         "item": "cream",
         "amount": "30ml"
       }
     ],
-    "method": "Build vodka and Kahl\u00faa in rocks glass over ice, float cream on top.",
+    "method": "Build vodka and Kahlúa in rocks glass over ice, float cream on top.",
     "glass": "rocks",
     "garnish": "",
     "notes": "",
@@ -1417,7 +1417,7 @@
       {
         "item": "coffee liqueur",
         "amount": "20ml",
-        "match_name": "Kahl\u00faa Coffee Liqueur"
+        "match_name": "Kahlúa Coffee Liqueur"
       }
     ],
     "method": "Build in rocks glass over ice, stir.",
@@ -1438,7 +1438,7 @@
       {
         "item": "coffee liqueur",
         "amount": "15ml",
-        "match_name": "Kahl\u00faa Coffee Liqueur"
+        "match_name": "Kahlúa Coffee Liqueur"
       },
       {
         "item": "Baileys",
@@ -1450,10 +1450,10 @@
         "amount": "15ml"
       }
     ],
-    "method": "Layer carefully in shot glass: Kahl\u00faa, then Baileys, then Grand Marnier.",
+    "method": "Layer carefully in shot glass: Kahlúa, then Baileys, then Grand Marnier.",
     "glass": "shot",
     "garnish": "",
-    "notes": "Substitute Cointreau or Triple Sec for Grand Marnier \u2014 close enough.",
+    "notes": "Substitute Cointreau or Triple Sec for Grand Marnier — close enough.",
     "tags": [
       "sweet",
       "shot"
@@ -2118,9 +2118,9 @@
     "category": "modern_classic",
     "ingredients": [
       {
-        "item": "a\u00f1ejo tequila",
+        "item": "añejo tequila",
         "amount": "60ml",
-        "match_sub_style": "a\u00f1ejo"
+        "match_sub_style": "añejo"
       },
       {
         "item": "agave syrup",
@@ -2171,7 +2171,7 @@
     "method": "Stir with ice, strain into rocks glass over a large cube.",
     "glass": "rocks",
     "garnish": "flamed orange peel",
-    "notes": "Missing mezcal \u2014 works as a tequila-only OF; add Laphroaig rinse for a similar smoky note.",
+    "notes": "Missing mezcal — works as a tequila-only OF; add Laphroaig rinse for a similar smoky note.",
     "tags": [
       "smoky",
       "spirit-forward",
@@ -2240,7 +2240,7 @@
   },
   {
     "id": 71,
-    "name": "Champs-\u00c9lys\u00e9es",
+    "name": "Champs-Élysées",
     "category": "classic",
     "ingredients": [
       {
@@ -2465,7 +2465,7 @@
       {
         "item": "coffee liqueur",
         "amount": "30ml",
-        "match_name": "Kahl\u00faa Coffee Liqueur"
+        "match_name": "Kahlúa Coffee Liqueur"
       },
       {
         "item": "cream",
@@ -2488,7 +2488,7 @@
     "category": "classic",
     "ingredients": [
       {
-        "item": "Chambord or cr\u00e8me de cassis",
+        "item": "Chambord or crème de cassis",
         "amount": "10ml",
         "match_name": "Chambord"
       },
@@ -2514,7 +2514,7 @@
     "category": "modern_classic",
     "ingredients": [
       {
-        "item": "bourbon or rye",
+        "item": "rye (or bourbon)",
         "amount": "60ml",
         "match_category": "whisky"
       },
@@ -2536,13 +2536,14 @@
     ],
     "method": "Stir with ice until well-chilled, strain into a chilled coupe.",
     "glass": "coupe",
-    "garnish": "brandied cherry or orange peel",
-    "notes": "Todd Smith, Bourbon & Branch (2007). Averna replaces sweet vermouth.",
+    "garnish": "brandied cherry",
+    "notes": "Manhattan with Averna in place of sweet vermouth (Todd Smith, 2005). Rye preferred.",
     "tags": [
-      "bitter",
       "spirit-forward",
       "stirred",
-      "warming"
+      "bitter",
+      "warming",
+      "after-dinner"
     ]
   },
   {
@@ -2560,24 +2561,24 @@
         "amount": "25ml"
       },
       {
-        "item": "simple syrup",
+        "item": "sugar syrup",
         "amount": "10ml",
         "match_sub_style": "simple syrup"
       },
       {
-        "item": "egg white (optional)",
-        "amount": "1"
+        "item": "egg white",
+        "amount": "1 (optional)"
       }
     ],
-    "method": "Dry shake if using egg white, then shake hard with ice. Double-strain into a coupe.",
+    "method": "Dry-shake all ingredients, add ice and shake again, strain into a coupe.",
     "glass": "coupe",
-    "garnish": "3 drops Angostura on the foam",
-    "notes": "Bittersweet, lower-ABV sour. Skip egg white for a punchier, sharper drink.",
+    "garnish": "lemon twist",
+    "notes": "Bittersweet riff on the whisky sour. Averna is sweet, so keep syrup light.",
     "tags": [
-      "bitter",
       "sour",
       "shaken",
-      "lower-abv"
+      "bitter",
+      "after-dinner"
     ]
   },
   {
@@ -2587,23 +2588,22 @@
     "ingredients": [
       {
         "item": "Whitley Neill Rhubarb & Ginger Gin",
-        "amount": "45ml",
+        "amount": "50ml",
         "match_name": "Whitley Neill Rhubarb & Ginger Gin"
       },
       {
         "item": "tonic water",
-        "amount": "to top (~120ml)"
+        "amount": "top"
       }
     ],
-    "method": "Build over plenty of ice in a highball or copa, stir briefly.",
+    "method": "Build in a glass over ice, top with tonic, stir gently.",
     "glass": "highball",
-    "garnish": "orange wheel + sprig of rosemary or thin ginger slice",
-    "notes": "Premium tonic (Fever-Tree Mediterranean or similar) recommended.",
+    "garnish": "orange slice or fresh ginger",
+    "notes": "",
     "tags": [
-      "light",
       "refreshing",
-      "built",
-      "highball"
+      "light",
+      "built"
     ]
   },
   {
@@ -2613,7 +2613,7 @@
     "ingredients": [
       {
         "item": "Whitley Neill Rhubarb & Ginger Gin",
-        "amount": "45ml",
+        "amount": "50ml",
         "match_name": "Whitley Neill Rhubarb & Ginger Gin"
       },
       {
@@ -2621,54 +2621,54 @@
         "amount": "25ml"
       },
       {
-        "item": "simple syrup",
+        "item": "sugar syrup",
         "amount": "15ml",
         "match_sub_style": "simple syrup"
       },
       {
         "item": "soda water",
-        "amount": "to top"
+        "amount": "top"
       }
     ],
-    "method": "Shake gin, lemon and syrup with ice. Strain into a Collins glass over fresh ice, top with soda.",
+    "method": "Shake gin, lemon and syrup with ice. Strain into a collins glass over ice, top with soda.",
     "glass": "collins",
     "garnish": "lemon wheel",
     "notes": "",
     "tags": [
-      "sour",
       "refreshing",
-      "shaken",
-      "highball"
+      "citrusy",
+      "light"
     ]
   },
   {
     "id": 84,
     "name": "Bloody Cello Spritz",
-    "category": "highball",
+    "category": "modern_classic",
     "ingredients": [
+      {
+        "item": "Bloody Cello",
+        "amount": "60ml",
+        "match_name": "Departed Spirits \"Bloody Cello\""
+      },
       {
         "item": "prosecco",
         "amount": "90ml"
-      },
-      {
-        "item": "Departed Spirits \"Bloody Cello\"",
-        "amount": "60ml",
-        "match_name": "Departed Spirits \"Bloody Cello\""
       },
       {
         "item": "soda water",
         "amount": "splash"
       }
     ],
-    "method": "Build in a large wine glass over ice. Stir gently.",
+    "method": "Build in a wine glass over ice, stir gently.",
     "glass": "wine",
-    "garnish": "orange wheel",
-    "notes": "Aperol-Spritz-style serve; the chilli warmth comes through on the finish.",
+    "garnish": "orange slice",
+    "notes": "Limoncello-spritz style; the blood-orange/chilli liqueur brings smoke and bitterness.",
     "tags": [
-      "light",
       "refreshing",
+      "light",
       "built",
-      "aperitif"
+      "aperitif",
+      "bitter"
     ]
   },
   {
@@ -2677,76 +2677,73 @@
     "category": "sour",
     "ingredients": [
       {
-        "item": "tequila (blanco or reposado)",
-        "amount": "45ml",
-        "match_category": "tequila"
+        "item": "blanco tequila",
+        "amount": "50ml",
+        "match_sub_style": "blanco"
       },
       {
-        "item": "Departed Spirits \"Bloody Cello\"",
-        "amount": "20ml",
+        "item": "Bloody Cello",
+        "amount": "25ml",
         "match_name": "Departed Spirits \"Bloody Cello\""
       },
       {
         "item": "lime juice",
-        "amount": "20ml"
-      },
-      {
-        "item": "simple syrup",
-        "amount": "5ml (to taste)",
-        "match_sub_style": "simple syrup"
+        "amount": "25ml"
       }
     ],
-    "method": "Shake hard with ice. Strain into a rocks glass over fresh ice (or coupe, no ice).",
+    "method": "Shake with ice, strain into a rocks glass over ice. Chilli-salt rim optional.",
     "glass": "rocks",
-    "garnish": "chilli-salt half-rim, lime wheel",
-    "notes": "Bloody Cello replaces triple sec; the ancho chilli matches a Tajin-style rim.",
+    "garnish": "chilli-salt rim, lime wheel",
+    "notes": "Margarita with Bloody Cello in place of orange liqueur for blood-orange and ancho heat.",
     "tags": [
       "sour",
-      "spicy",
-      "shaken"
+      "shaken",
+      "citrusy",
+      "smoky"
     ]
   },
   {
     "id": 86,
-    "name": "Barrel-Aged Negroni (serve)",
+    "name": "Barrel-Aged Negroni",
     "category": "classic",
     "ingredients": [
       {
-        "item": "Barrel-Aged Negroni",
-        "amount": "75ml",
+        "item": "Barrel-Aged Negroni (batched)",
+        "amount": "90ml",
         "match_name": "Barrel-Aged Negroni"
       }
     ],
-    "method": "Pour over a large ice cube. Optional: stir for a few seconds with ice.",
+    "method": "Pour the pre-batched, barrel-aged Negroni over a large ice cube; stir briefly to chill.",
     "glass": "rocks",
     "garnish": "orange peel",
-    "notes": "Pre-made and rested in oak. Serve straight from the barrel/bottle.",
+    "notes": "Pre-batched and barrel-aged; serve as-is.",
     "tags": [
       "bitter",
       "spirit-forward",
-      "built",
+      "stirred",
       "aperitif"
     ]
   },
   {
     "id": 87,
-    "name": "Barrel-Aged Vieux Carr\u00e9 (serve)",
+    "name": "Barrel-Aged Vieux Carré",
     "category": "classic",
     "ingredients": [
       {
-        "item": "Barrel-Aged Vieux Carr\u00e9",
+        "item": "Barrel-Aged Vieux Carré (batched)",
         "amount": "75ml",
-        "match_name": "Barrel-Aged Vieux Carr\u00e9"
+        "match_name": "Barrel-Aged Vieux Carré"
       }
     ],
-    "method": "Pour over a large ice cube. Optional: stir briefly with ice.",
+    "method": "Pour the pre-batched, barrel-aged Vieux Carré over fresh ice; stir briefly to chill.",
     "glass": "rocks",
     "garnish": "lemon peel",
-    "notes": "Pre-made and rested in oak. Serve straight from the barrel/bottle.",
+    "notes": "Pre-batched and barrel-aged; serve as-is.",
     "tags": [
       "spirit-forward",
+      "stirred",
       "warming",
-      "built"
+      "after-dinner"
     ]
   }
 ]

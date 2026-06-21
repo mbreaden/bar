@@ -424,14 +424,6 @@
     "notes": "1L; aged 14 years; new charred oak cask finish"
   },
   {
-    "id": 54,
-    "name": "Glenmorangie Finest Reserve 19",
-    "producer": "Glenmorangie",
-    "category": "whisky",
-    "sub_style": "highland",
-    "notes": "700mL; 43% ABV; aged 19 years"
-  },
-  {
     "id": 55,
     "name": "The Balvenie DoubleWood 12",
     "producer": "The Balvenie",
@@ -886,5 +878,45 @@
     "category": "gin",
     "sub_style": "london dry",
     "notes": "47.3% ABV; small batch; distilled with fresh citrus and botanicals; London, England"
+  },
+  {
+    "id": 112,
+    "name": "Departed Spirits \"Bloody Cello\"",
+    "producer": "Departed Spirits",
+    "category": "liqueur",
+    "sub_style": "blood orange liqueur",
+    "notes": "Blood-orange limoncello-style; Australian; blood orange peel + ancho chilli; smoky/bitter/sour; 500mL, 24% ABV"
+  },
+  {
+    "id": 113,
+    "name": "Amaro Averna",
+    "producer": "Averna",
+    "category": "amaro",
+    "sub_style": "",
+    "notes": "Sicilian, Caltanissetta; 29% ABV"
+  },
+  {
+    "id": 114,
+    "name": "Whitley Neill Rhubarb & Ginger Gin",
+    "producer": "Whitley Neill",
+    "category": "gin",
+    "sub_style": "flavoured",
+    "notes": "England; 700mL, 43% ABV"
+  },
+  {
+    "id": 115,
+    "name": "Barrel-Aged Negroni",
+    "producer": "",
+    "category": "other",
+    "sub_style": "barrel-aged cocktail",
+    "notes": "Kept in stock in quantity"
+  },
+  {
+    "id": 116,
+    "name": "Barrel-Aged Vieux Carré",
+    "producer": "",
+    "category": "other",
+    "sub_style": "barrel-aged cocktail",
+    "notes": "Kept in stock in quantity"
   }
 ]
